@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import * as jose from 'jose';
 import ldap from 'ldapjs';
-import { getPool, sql } from '@/lib/db';
+import prisma from '@/lib/prisma';
 
 function buildCandidateDns(username, baseDN) {
   const normalized = (username || '').trim();
@@ -221,12 +221,13 @@ export async function POST(request) {
 
     // Verify username in ResignLoginMast database table
     try {
-      const pool = await getPool();
-      const mastResult = await pool.request()
-        .input('username', sql.NVarChar, username.trim())
-        .query('SELECT EmpCode FROM ResignLoginMast WHERE EmpCode = @username');
+      const mastResult = await prisma.$queryRaw`
+        SELECT [EmpCode]
+        FROM [dbo].[ResignLoginMast]
+        WHERE [EmpCode] = ${username.trim()}
+      `;
 
-      if (!mastResult.recordset || mastResult.recordset.length === 0) {
+      if (mastResult.length === 0) {
         return NextResponse.json(
           { error: 'You are not allowed to access this site' },
           { status: 403 }

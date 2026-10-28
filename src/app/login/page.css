@@ -5,8 +5,7 @@
   align-items: flex-start;
   justify-content: flex-start;
   min-height: 100vh;
-  /* Increased left padding to 18rem to push the form rightward over the sky */
-  padding: 2.5rem 4rem 2.5rem 18rem; 
+  padding: 2.5rem 4rem 2.5rem 18rem;
   background-image: url('/images/bg_image.png');
   background-size: cover;
   background-position: center;
@@ -22,9 +21,8 @@
 
 .pageHeader .brandName {
   margin: 0 0 0.2rem;
-  /* Reduced from 2.5rem to 1.5rem */
-  font-size: 1.5rem; 
-  padding-left:0px;
+  font-size: 1.5rem;
+  padding-left: 0px;
   font-weight: 800;
   color: #075985;
   letter-spacing: -0.01em;
@@ -33,9 +31,8 @@
 
 .pageHeader .systemName {
   margin: 0;
-  /* Reduced from 1.2rem to 0.85rem */
-  font-size: 0.95rem; 
-  padding-left:30px;
+  font-size: 0.95rem;
+  padding-left: 30px;
   font-weight: 600;
   color: #0d0d18;
   text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
@@ -45,8 +42,7 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  /* Reduced card max-width from 22rem to 17rem */
-  max-width: 17rem; 
+  max-width: 17rem;
 }
 
 .loginCard {
@@ -56,11 +52,10 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 
+  box-shadow:
     0 15px 30px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  /* Reduced padding from 1.5rem to 1rem */
-  padding: 1rem; 
+  padding: 1rem;
 }
 
 .accentBar {
@@ -73,10 +68,11 @@
 
 .loginAlert {
   display: flex;
+  overflow-wrap: anywhere;
   padding: 0.75rem 0.9rem;
   margin-bottom: 1rem;
   border-radius: 0.75rem;
-  font-size: 0.825rem;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
@@ -95,13 +91,13 @@
 .loginForm {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem; /* Tightened spacing between input fields */
+  gap: 0.65rem;
 }
 
 .loginField label {
   display: block;
   margin-bottom: 0.25rem;
-  font-size: 0.62rem; /* Slightly smaller label text */
+  font-size: 0.62rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -110,8 +106,7 @@
 
 .loginField input {
   width: 100%;
-  /* Reduced input padding from 0.75rem 1rem to 0.5rem 0.75rem */
-  padding: 0.5rem 0.75rem; 
+  padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.8);
   background: rgba(255, 255, 255, 0.75);
@@ -119,7 +114,7 @@
   color: #0f172a;
   outline: none;
   box-sizing: border-box;
-  font-size: 12.5px; /* Slightly smaller font size */
+  font-size: 12.5px;
   transition: all 0.2s ease;
 }
 
@@ -135,8 +130,7 @@
 
 .loginButton {
   width: 100%;
-  /* Reduced button padding from 0.8rem 1rem to 0.55rem 0.8rem */
-  padding: 0.55rem 0.8rem; 
+  padding: 0.55rem 0.8rem;
   border: none;
   border-radius: 0.5rem;
   font-weight: 700;
@@ -159,4 +153,95 @@
   opacity: 0.65;
   cursor: not-allowed;
   transform: none;
+}
+
+@media (max-width: 600px) {
+  .loginPage {
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: max(1.25rem, env(safe-area-inset-top)) 1rem max(1.25rem, env(safe-area-inset-bottom));
+    background-position: 58% center;
+  }
+
+  .loginPage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(240, 249, 255, 0.72);
+  }
+
+  .pageHeader {
+    width: min(100%, 28rem);
+    margin: 0 auto 1.25rem;
+    text-align: center;
+  }
+
+  .pageHeader .brandName {
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    padding-left: 0;
+  }
+
+  .pageHeader .systemName {
+    padding-left: 0;
+  }
+
+  .loginContainer {
+    max-width: 28rem;
+    margin: 0 auto;
+  }
+
+  .loginCard {
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    padding: clamp(1.25rem, 5vw, 2rem);
+  }
+
+  .loginForm {
+    gap: 1rem;
+  }
+
+  .loginField label {
+    margin-bottom: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .loginField input {
+    min-height: 3rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.65rem;
+    border-color: #cbd5e1;
+    background: #ffffff;
+    font-size: 1rem;
+  }
+
+  .loginButton {
+    min-height: 3rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.65rem;
+    font-size: 1rem;
+  }
+
+  .loginPage::before {
+    background: rgba(240, 249, 255, 0.72);
+  }
+
+  .pageHeader {
+    margin-bottom: 1.25rem;
+  }
+
+  .loginContainer {
+    max-width: 28rem;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .loginPage {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
 }

@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import * as jose from 'jose';
 import Link from 'next/link';
 import LogoutButton from './LogoutButton';
+import DashboardMenu from './DashboardMenu';
 import EmployeeTable from './EmployeeTable';
 import { getPayPool, sql } from '@/lib/payDb';
 
@@ -52,10 +53,13 @@ export default async function Dashboard() {
     <div style={{ fontFamily: 'Arial, sans-serif', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', color: '#333333', overflow: 'hidden' }}>
       
       {/* Normal Navbar */}
-      <nav className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px', borderBottom: '1px solid #cccccc', backgroundColor: '#f8f9fa', flexShrink: 0 }}>
+      <nav className="no-print dashboardNavbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px', borderBottom: '1px solid #cccccc', backgroundColor: '#f8f9fa', flexShrink: 0 }}>
+        <div className="dashboardNavbarBrand">
+          <DashboardMenu />
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span style={{ fontWeight: 'bold', fontSize: '16px' }}>Greentech Industries</span>
           <span style={{ fontSize: '11px', color: '#666666' }}>Resign Forms Management System</span>
+        </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <span style={{ fontSize: '13px' }}>

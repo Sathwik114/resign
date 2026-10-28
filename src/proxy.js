@@ -10,20 +10,15 @@ export async function proxy(request) {
 
   if (isDashboardPage) {
     if (!token) {
-      // Not authenticated, redirect to login
-      const url = new URL('/login', request.url);
-      return NextResponse.redirect(url);
+      return NextResponse.redirect(new URL('/login', request.url));
     }
 
     try {
       const secret = new TextEncoder().encode(process.env.JWT_SECRET);
       await jose.jwtVerify(token, secret);
-      // Valid token, proceed
       return NextResponse.next();
     } catch (error) {
-      // Invalid/expired token, clear it and redirect to login
-      const url = new URL('/login', request.url);
-      const response = NextResponse.redirect(url);
+      const response = NextResponse.redirect(new URL('/login', request.url));
       response.cookies.delete('auth_token');
       return response;
     }

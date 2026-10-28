@@ -1,5 +1,9 @@
 require('dotenv').config();
-const { defineConfig, env } = require('prisma/config');
+const { defineConfig } = require('prisma/config');
+
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL must be set to run Prisma commands.');
+}
 
 module.exports = defineConfig({
   schema: "prisma/schema.prisma",
@@ -7,6 +11,6 @@ module.exports = defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    url: process.env.DATABASE_URL,
   },
 });

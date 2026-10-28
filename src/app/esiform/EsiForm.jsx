@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const STATES = [
   "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana",
@@ -20,6 +20,44 @@ const initial = {
   childCount: "0", children: Array.from({ length: 5 }, () => ({ name: "", dob: "", photo: null })),
   includeParents: "", fatherDob: "", fatherPhoto: null, motherDob: "", motherPhoto: null,
 };
+
+const MAX_IMAGE_SIZE = 100 * 1024;
+
+async function compressImage(file) {
+  const image = await createImageBitmap(file);
+  try {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Image compression is unavailable in this browser.");
+
+    let width = image.width;
+    let height = image.height;
+    for (let resizeAttempt = 0; resizeAttempt < 12; resizeAttempt++) {
+      canvas.width = width;
+      canvas.height = height;
+      context.fillStyle = "#fff";
+      context.fillRect(0, 0, width, height);
+      context.drawImage(image, 0, 0, width, height);
+
+      for (const quality of [0.92, 0.82, 0.72, 0.62, 0.52, 0.42, 0.32]) {
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+        if (!blob) throw new Error("Could not compress an uploaded image.");
+        if (blob.size < MAX_IMAGE_SIZE) {
+          const filename = file.name.replace(/\.[^.]+$/, "") || "photo";
+          return new File([blob], `${filename}.jpg`, { type: "image/jpeg" });
+        }
+      }
+
+      width = Math.max(64, Math.floor(width * 0.8));
+      height = Math.max(64, Math.floor(height * 0.8));
+      if (width === 64 && height === 64) break;
+    }
+
+    throw new Error("An image could not be compressed below 100 KB. Choose a smaller image.");
+  } finally {
+    image.close();
+  }
+}
 
 const css = `
 .esi{--ink:#1b2b2a;--muted:#6b7d7b;--line:#e1e9e7;--bg:#f1f5f4;--card:#fff;--brand:#0f766e;--brand-d:#0b5a54;--soft:#e8f3f1;--err:#c0392b;
@@ -57,6 +95,7 @@ const css = `
 .date-input-wrap{position:relative}
 .date-input-wrap::after{content:"";position:absolute;right:12px;top:50%;width:16px;height:16px;transform:translateY(-50%);pointer-events:none;background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236b7d7b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
 .date-input-wrap input.date-picker-native{position:absolute;right:0;top:0;width:42px;height:40px;padding:0;opacity:0;cursor:pointer;z-index:1}
+.date-input-wrap input.date-text{cursor:pointer}
 .date-input-wrap input.date-text{padding-right:42px}
 .f select::-ms-expand{display:none}
 .f input[type=tel],.f input[type=text]{-webkit-appearance:none}
@@ -67,6 +106,9 @@ const css = `
 .err{color:var(--err);font-size:11px;margin-top:4px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips.nowrap{flex-wrap:nowrap;gap:3px}
+.chips.nowrap .chip{flex:1;min-width:0}
+.chips.nowrap .chip span{padding:8px 2px;font-size:10.5px;white-space:nowrap}
 .chips.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--soft);padding:3px;border-radius:10px;gap:3px}
 .chip{position:relative}
 .chip input{position:absolute;opacity:0;pointer-events:none}
@@ -183,9 +225,6 @@ const css = `
   .esi-address-card .esi-photo-mobile{display:none}
   .esi-address-card textarea{height:40px;min-height:40px;resize:none}
   .esi-previous-card input:disabled{background:#eef3f2;color:#8b9b99;cursor:not-allowed}
-  .esi-personal-card .chips.nowrap{flex-wrap:nowrap;gap:3px}
-  .esi-personal-card .chips.nowrap .chip{flex:1;min-width:0}
-  .esi-personal-card .chips.nowrap .chip span{padding:8px 2px;font-size:10.5px;white-space:nowrap}
 }
 `;
 
@@ -225,29 +264,15 @@ function isValidDate(value) {
 }
 
 function DateInput({ value, onChange }) {
-  const [text, setText] = useState(() => toGbDate(value));
-  const changeText = (event) => {
-    const digits = event.target.value.replace(/\D/g, "").slice(0, 8);
-    const formatted = digits.length > 4
-      ? `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`
-      : digits.length > 2
-        ? `${digits.slice(0, 2)}/${digits.slice(2)}`
-        : digits;
-    setText(formatted);
-    const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(formatted);
-    if (!match) {
-      onChange("");
-      return;
-    }
-    const [, day, month, year] = match;
-    const isoDate = `${year}-${month}-${day}`;
-    onChange(isValidDate(isoDate) ? isoDate : "");
+  const datePickerRef = useRef(null);
+  const openDatePicker = () => {
+    const picker = datePickerRef.current;
+    if (!picker) return;
+    if (typeof picker.showPicker === "function") picker.showPicker();
+    else picker.click();
   };
-
   const changeDate = (event) => {
-    const isoDate = event.target.value;
-    setText(toGbDate(isoDate));
-    onChange(isoDate);
+    onChange(event.target.value);
   };
 
   return (
@@ -255,13 +280,13 @@ function DateInput({ value, onChange }) {
       <input
         className="date-text"
         type="text"
-        inputMode="numeric"
         placeholder="DD/MM/YYYY"
-        maxLength={10}
-        value={text}
-        onChange={changeText}
+        value={toGbDate(value)}
+        readOnly
+        onClick={openDatePicker}
       />
       <input
+        ref={datePickerRef}
         className="date-picker-native"
         type="date"
         lang="en-GB"
@@ -277,10 +302,26 @@ function displayDate(value) {
   return toGbDate(value) || value;
 }
 
+function useObjectUrl(file) {
+  const [preview, setPreview] = useState(null);
+
+  useEffect(() => {
+    if (!file) return undefined;
+
+    const objectUrl = URL.createObjectURL(file);
+    const frame = requestAnimationFrame(() => setPreview({ file, url: objectUrl }));
+    return () => {
+      cancelAnimationFrame(frame);
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [file]);
+
+  return preview?.file === file ? preview.url : null;
+}
+
 function Photo({ label, file, onChange, error, className, zoomable = false, browsePreview = false }) {
-  const url = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
+  const url = useObjectUrl(file);
   const [previewOpen, setPreviewOpen] = useState(false);
-  useEffect(() => () => url && URL.revokeObjectURL(url), [url]);
   useEffect(() => {
     if (!previewOpen) return undefined;
     const closeOnEscape = (event) => {
@@ -356,7 +397,7 @@ function Summary({ rows }) {
 }
 
 function PhotoRow({ label, file }) {
-  const url = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
+  const url = useObjectUrl(file);
   if (!url) return null;
   return <div className="sum-photo"><span>{label}</span><img src={url} alt={label} /></div>;
 }
@@ -368,6 +409,8 @@ export default function EmployeeESIForm() {
   const [errors, setErrors] = useState({});
   const [agree, setAgree] = useState(false);
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const set = (k, v) => {
     setD((p) => ({ ...p, [k]: v }));
@@ -425,13 +468,80 @@ export default function EmployeeESIForm() {
 
   const next = () => { if (validate()) { setStep((s) => s + 1); window.scrollTo?.({ top: 0 }); } };
   const back = () => { setStep((s) => s - 1); window.scrollTo?.({ top: 0 }); };
-  const submit = () => {
-    if (!agree) return;
-    // Replace with your API call, e.g. build FormData from `d` and POST it.
-    console.log("Submitted:", d);
-    setDone(true);
+  const submit = async () => {
+    if (!agree || submitting) return;
+    setSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const photoEntries = [
+        ["photo", d.photo],
+        ...(married ? [["spousePhoto", d.spousePhoto]] : []),
+        ...d.children.slice(0, count).map((child, index) => [`child${index + 1}Photo`, child.photo]),
+        ...(d.includeParents === "Yes" ? [["fatherPhoto", d.fatherPhoto], ["motherPhoto", d.motherPhoto]] : []),
+      ];
+      const compressedPhotos = await Promise.all(
+        photoEntries.map(async ([name, file]) => {
+          if (!file) throw new Error(`Please upload the ${name} image before submitting.`);
+          return [name, await compressImage(file)];
+        }),
+      );
+
+      const compressedByName = Object.fromEntries(compressedPhotos);
+      setD((current) => ({
+        ...current,
+        photo: compressedByName.photo,
+        spousePhoto: married ? compressedByName.spousePhoto : current.spousePhoto,
+        children: current.children.map((child, index) => (
+          index < count ? { ...child, photo: compressedByName[`child${index + 1}Photo`] } : child
+        )),
+        fatherPhoto: d.includeParents === "Yes" ? compressedByName.fatherPhoto : current.fatherPhoto,
+        motherPhoto: d.includeParents === "Yes" ? compressedByName.motherPhoto : current.motherPhoto,
+      }));
+
+      const formData = new FormData();
+      formData.append("details", JSON.stringify({
+        employeeId: d.empId,
+        employeeName: d.empName,
+        dateOfJoining: d.doj,
+        dateOfBirth: d.dob,
+        gender: d.gender,
+        mobileNumber: d.mobile,
+        aadharNumber: d.aadhar,
+        maritalStatus: d.marital,
+        hasPreviousEsi: d.prevEsi === "Yes",
+        previousEsiNumber: d.prevEsiNo,
+        address: d.address,
+        state: d.state,
+        pincode: d.pincode,
+        fatherName: d.fatherName,
+        motherName: d.motherName,
+        spouseName: d.spouseName,
+        spouseDateOfBirth: d.spouseDob,
+        childCount: count,
+        children: d.children.slice(0, count).map((child) => ({
+          name: child.name,
+          dateOfBirth: child.dob,
+        })),
+        includesParents: d.includeParents === "Yes",
+        fatherDateOfBirth: d.fatherDob,
+        motherDateOfBirth: d.motherDob,
+      }));
+      compressedPhotos.forEach(([name, file]) => formData.append(name, file));
+
+      const response = await fetch("/api/esiform", { method: "POST", body: formData });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Unable to save the ESI form. Please try again.");
+      setDone(true);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to save the ESI form. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
-  const reset = () => { setD(initial); setStep(0); setAgree(false); setDone(false); setErrors({}); };
+  const reset = () => {
+    setD(initial); setStep(0); setAgree(false); setDone(false); setErrors({}); setSubmitError("");
+  };
 
   const num = (k, max) => (e) => set(k, e.target.value.replace(/\D/g, "").slice(0, max));
 
@@ -489,7 +599,7 @@ export default function EmployeeESIForm() {
                   <input type="tel" inputMode="numeric" placeholder="10-digit number" value={d.mobile} onChange={num("mobile", 10)} />
                 </Field>
                 <Field label="Aadhar number" error={errors.aadhar}>
-                  <input type="tel" inputMode="numeric" placeholder="12-digit number" value={d.aadhar} onChange={num("aadhar", 12)} />
+                  <input type="tel" inputMode="numeric" maxLength={12} placeholder="12-digit number" value={d.aadhar} onChange={num("aadhar", 12)} />
                 </Field>
                 <Field label="Marital status" error={errors.marital}>
                   <Chips name="marital" options={MARITAL} value={d.marital} onChange={(v) => set("marital", v)} nowrap />
@@ -506,6 +616,7 @@ export default function EmployeeESIForm() {
                     value={d.prevEsi}
                     onChange={(v) => {
                       set("prevEsi", v);
+                      setErrors((current) => ({ ...current, prevEsiNo: undefined }));
                       if (v === "No") set("prevEsiNo", "");
                     }}
                   />
@@ -515,7 +626,7 @@ export default function EmployeeESIForm() {
                     type="text"
                     inputMode="numeric"
                     value={d.prevEsiNo}
-                    onChange={num("prevEsiNo", 17)}
+                    onChange={num("prevEsiNo", 20)}
                     disabled={d.prevEsi !== "Yes"}
                     placeholder={d.prevEsi === "Yes" ? "Enter previous ESI number" : "Select Yes to enter a number"}
                   />
@@ -727,6 +838,7 @@ export default function EmployeeESIForm() {
                   <span><b>Declaration:</b> I hereby confirm that the information provided is true to the best of my knowledge.</span>
                 </label>
               </section>
+              {submitError && <p role="alert" className="err">{submitError}</p>}
             </>
           )}
         </main>
@@ -737,7 +849,9 @@ export default function EmployeeESIForm() {
             {step < 3 ? (
               <button className="btn pri" onClick={next}>Next</button>
             ) : (
-              <button className="btn pri" onClick={submit} disabled={!agree}>Submit</button>
+              <button className="btn pri" onClick={submit} disabled={!agree || submitting}>
+                {submitting ? "Compressing and saving..." : "Submit"}
+              </button>
             )}
           </div>
         </div>

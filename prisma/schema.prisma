@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model EsiEmployee {
+  EmployeeId         String   @id @db.NVarChar(50)
+  EmployeeName       String   @db.NVarChar(200)
+  DateOfJoining      DateTime @db.Date
+  DateOfBirth        DateTime @db.Date
+  Gender             String   @db.NVarChar(20)
+  MobileNumber       String   @db.VarChar(10)
+  AadharNumber       String   @db.VarChar(12)
+  MaritalStatus      String   @db.NVarChar(20)
+  HasPreviousEsi     Boolean
+  PreviousEsiNumber  String?  @db.VarChar(20)
+  Address            String   @db.NVarChar(Max)
+  State              String   @db.NVarChar(100)
+  Pincode            String   @db.VarChar(6)
+  Photograph         Bytes    @db.VarBinary(Max)
+  PhotographMimeType String   @db.VarChar(100)
+
+  FatherName          String    @db.NVarChar(200)
+  MotherName          String    @db.NVarChar(200)
+  SpouseName          String?   @db.NVarChar(200)
+  SpouseDateOfBirth   DateTime? @db.Date
+  SpousePhotograph    Bytes?    @db.VarBinary(Max)
+  SpousePhotoMimeType String?   @db.VarChar(100)
+
+  ChildCount          Int       @default(0)
+  Child1Name          String?   @db.NVarChar(200)
+  Child1DateOfBirth   DateTime? @db.Date
+  Child1Photograph    Bytes?    @db.VarBinary(Max)
+  Child1PhotoMimeType String?   @db.VarChar(100)
+  Child2Name          String?   @db.NVarChar(200)
+  Child2DateOfBirth   DateTime? @db.Date
+  Child2Photograph    Bytes?    @db.VarBinary(Max)
+  Child2PhotoMimeType String?   @db.VarChar(100)
+  Child3Name          String?   @db.NVarChar(200)
+  Child3DateOfBirth   DateTime? @db.Date
+  Child3Photograph    Bytes?    @db.VarBinary(Max)
+  Child3PhotoMimeType String?   @db.VarChar(100)
+  Child4Name          String?   @db.NVarChar(200)
+  Child4DateOfBirth   DateTime? @db.Date
+  Child4Photograph    Bytes?    @db.VarBinary(Max)
+  Child4PhotoMimeType String?   @db.VarChar(100)
+  Child5Name          String?   @db.NVarChar(200)
+  Child5DateOfBirth   DateTime? @db.Date
+  Child5Photograph    Bytes?    @db.VarBinary(Max)
+  Child5PhotoMimeType String?   @db.VarChar(100)
+
+  IncludesParents     Boolean
+  FatherDateOfBirth   DateTime? @db.Date
+  FatherPhotograph    Bytes?    @db.VarBinary(Max)
+  FatherPhotoMimeType String?   @db.VarChar(100)
+  MotherDateOfBirth   DateTime? @db.Date
+  MotherPhotograph    Bytes?    @db.VarBinary(Max)
+  MotherPhotoMimeType String?   @db.VarChar(100)
+
+  CreatedAt DateTime @default(now()) @db.DateTime2
+  UpdatedAt DateTime @updatedAt @db.DateTime2
+
+  @@map("EsiEmployee")
+}
+
+model ResignLoginMast {
+  EmpCode String @unique @db.VarChar(10)
+  EmpName String @db.VarChar(50)
+
+  @@map("ResignLoginMast")
+}

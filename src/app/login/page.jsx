@@ -50,8 +50,12 @@ export default function Login() {
       setSuccess('Logged in successfully! Redirecting to dashboard...');
       setFormData({ username: '', password: '' });
 
+      const requestedPath = new URLSearchParams(window.location.search).get('next');
+      const destination = requestedPath?.startsWith('/') && !requestedPath.startsWith('//')
+        ? requestedPath
+        : '/dashboard';
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push(destination);
         router.refresh();
       }, 1000);
     } catch (err) {
@@ -65,7 +69,8 @@ export default function Login() {
     <div className="loginPage">
       <div className="pageHeader">
         <h3 className="brandName">GREENTECH INDUSTRIES</h3>
-        <p className="systemName">Resignation Application Forms</p>
+        <p className="systemName">Resign & ESI Application</p>
+        <p className="systemName">Management System</p>
       </div>
 
       <div className="loginContainer">
