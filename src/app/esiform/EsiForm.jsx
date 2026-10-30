@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 const STATES = [
   "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana",
@@ -24,22 +25,26 @@ const initial = {
 const MAX_IMAGE_SIZE = 100 * 1024;
 
 async function compressImage(file) {
+  if (file.type === "image/jpeg" && file.size < MAX_IMAGE_SIZE) return file;
+
   const image = await createImageBitmap(file);
   try {
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     if (!context) throw new Error("Image compression is unavailable in this browser.");
 
-    let width = image.width;
-    let height = image.height;
-    for (let resizeAttempt = 0; resizeAttempt < 12; resizeAttempt++) {
+    const maxDimension = 1600;
+    const initialScale = Math.min(1, maxDimension / Math.max(image.width, image.height));
+    let width = Math.max(1, Math.round(image.width * initialScale));
+    let height = Math.max(1, Math.round(image.height * initialScale));
+    for (let resizeAttempt = 0; resizeAttempt < 10; resizeAttempt++) {
       canvas.width = width;
       canvas.height = height;
       context.fillStyle = "#fff";
       context.fillRect(0, 0, width, height);
       context.drawImage(image, 0, 0, width, height);
 
-      for (const quality of [0.92, 0.82, 0.72, 0.62, 0.52, 0.42, 0.32]) {
+      for (const quality of [0.82, 0.65, 0.48, 0.35]) {
         const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
         if (!blob) throw new Error("Could not compress an uploaded image.");
         if (blob.size < MAX_IMAGE_SIZE) {
@@ -48,8 +53,8 @@ async function compressImage(file) {
         }
       }
 
-      width = Math.max(64, Math.floor(width * 0.8));
-      height = Math.max(64, Math.floor(height * 0.8));
+      width = Math.max(64, Math.floor(width * 0.75));
+      height = Math.max(64, Math.floor(height * 0.75));
       if (width === 64 && height === 64) break;
     }
 
@@ -60,7 +65,7 @@ async function compressImage(file) {
 }
 
 const css = `
-.esi{--ink:#1b2b2a;--muted:#6b7d7b;--line:#e1e9e7;--bg:#f1f5f4;--card:#fff;--brand:#0f766e;--brand-d:#0b5a54;--soft:#e8f3f1;--err:#c0392b;
+.esi{--ink:#1b2b2a;--muted:#6b7d7b;--line:#d3dedb;--bg:#f1f5f4;--card:#fff;--brand:#0f766e;--brand-d:#0b5a54;--soft:#e8f3f1;--err:#c0392b;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;color:var(--ink);background:var(--bg);min-height:100vh;box-sizing:border-box;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 .esi *{box-sizing:border-box}
 .esi-wrap{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
@@ -89,14 +94,29 @@ const css = `
 .f input[type=text],.f input[type=tel],.f input[type=date],.f input[type=number],.f select,.f textarea{
   width:100%;font:inherit;font-size:13.5px;padding:0 12px;height:40px;border:1px solid var(--line);border-radius:10px;background:#f8fbfa;color:var(--ink);outline:none;transition:border .15s,box-shadow .15s,background .15s;appearance:none;-webkit-appearance:none}
 .f input::placeholder{color:#a3b2b0}
-.f input[type=date]{padding-right:8px;min-width:0;line-height:38px}
-.f input[type=date]::-webkit-date-and-time-value{text-align:left}
-.f input[type=date]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
-.date-input-wrap{position:relative}
-.date-input-wrap::after{content:"";position:absolute;right:12px;top:50%;width:16px;height:16px;transform:translateY(-50%);pointer-events:none;background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236b7d7b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
-.date-input-wrap input.date-picker-native{position:absolute;right:0;top:0;width:42px;height:40px;padding:0;opacity:0;cursor:pointer;z-index:1}
-.date-input-wrap input.date-text{cursor:pointer}
-.date-input-wrap input.date-text{padding-right:42px}
+.date-picker-trigger{cursor:pointer}
+.date-picker-overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(13,31,29,.55)}
+.date-picker-dialog{width:min(320px,100%);padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.date-picker-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.date-picker-header h3{margin:0;font-size:14px}
+.date-picker-selects{display:flex;gap:6px}
+.date-picker-month-button{padding:6px 8px;border:0;border-radius:7px;background:var(--soft);color:var(--brand-d);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.date-picker-year-button{padding:6px 8px;border:0;border-radius:7px;background:var(--soft);color:var(--brand-d);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.date-picker-years{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-height:240px;overflow-y:auto;padding:2px}
+.date-picker-years button{height:32px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+.date-picker-years button:hover{background:var(--soft)}
+.date-picker-years button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand);color:#fff}
+.date-picker-months{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.date-picker-months button{height:36px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+.date-picker-months button:hover{background:var(--soft)}
+.date-picker-months button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand);color:#fff}
+.date-picker-weekdays,.date-picker-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center}
+.date-picker-weekdays{margin-bottom:4px;color:var(--muted);font-size:11px}
+.date-picker-days button{min-width:0;height:32px;padding:0;border:1px solid transparent;border-radius:7px;background:#fff;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+.date-picker-days button:hover{background:var(--soft)}
+.date-picker-days button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand);color:#fff}
+.date-picker-actions{display:flex;justify-content:space-between;margin-top:8px}
+.date-picker-actions button{padding:6px 8px;border:0;border-radius:7px;background:var(--soft);color:var(--brand-d);font:inherit;font-size:11px;cursor:pointer}
 .f select::-ms-expand{display:none}
 .f input[type=tel],.f input[type=text]{-webkit-appearance:none}
 .f select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7d7b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
@@ -104,7 +124,7 @@ const css = `
 .f input:focus,.f select:focus,.f textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,118,110,.12);background:#fff}
 .f.bad input,.f.bad select,.f.bad textarea{border-color:var(--err);background:#fff8f7}
 .err{color:var(--err);font-size:11px;margin-top:4px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips.nowrap{flex-wrap:nowrap;gap:3px}
 .chips.nowrap .chip{flex:1;min-width:0}
@@ -128,6 +148,7 @@ const css = `
 .photo-browse input{position:absolute;width:1px;height:1px;opacity:0}
 .photo-thumb{width:56px;height:56px;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden;cursor:zoom-in}
 .photo-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.review-photo-thumb{width:36px;height:36px;flex:none}
 .photo-filename{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
 .photo-browse:focus-within,.photo-thumb:focus-visible,.photo-preview-close:focus-visible{outline:2px solid rgba(15,118,110,.5);outline-offset:2px}
 .photo-preview-overlay{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(13,31,29,.78)}
@@ -156,6 +177,12 @@ const css = `
 .review-children-table .sum-photo img{width:32px;height:32px}
 .review-children-table .sum-photo span{font-size:10px}
 .review-no-photo{color:var(--muted)}
+@media (max-width:767px){
+  .review-children-scroll{overflow-y:scroll;scrollbar-width:thin;scrollbar-color:#7f9b97 #e8efed;-webkit-overflow-scrolling:touch}
+  .review-children-scroll::-webkit-scrollbar{width:6px}
+  .review-children-scroll::-webkit-scrollbar-track{background:#e8efed;border-radius:6px}
+  .review-children-scroll::-webkit-scrollbar-thumb{background:#7f9b97;border-radius:6px}
+}
 .bar{position:fixed;left:0;right:0;bottom:0;background:#ffffff;background:rgba(255,255,255,.95);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));z-index:5}
 .bar-in{max-width:480px;margin:0 auto;display:flex;gap:8px}
 .btn{-webkit-appearance:none;appearance:none;flex:1;-webkit-box-flex:1;font:inherit;font-size:14px;font-weight:600;height:44px;border-radius:12px;border:0;cursor:pointer;transition:background .15s,transform .1s}
@@ -264,37 +291,168 @@ function isValidDate(value) {
 }
 
 function DateInput({ value, onChange }) {
-  const datePickerRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [pickerView, setPickerView] = useState("days");
+  const [visibleDate, setVisibleDate] = useState(() => new Date());
+  const selectedYearRef = useRef(null);
+  const selectedDate = value && isValidDate(value)
+    ? new Date(Number(value.slice(0, 4)), Number(value.slice(5, 7)) - 1, Number(value.slice(8, 10)))
+    : null;
+  const year = visibleDate.getFullYear();
+  const month = visibleDate.getMonth();
+  const monthLabel = visibleDate.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  const leadingDays = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const calendarDays = Array.from({ length: 42 }, (_, index) => {
+    const day = index - leadingDays + 1;
+    return day > 0 && day <= daysInMonth ? day : null;
+  });
+  const years = Array.from({ length: 2101 - 1900 }, (_, index) => 1900 + index);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (pickerView === "years") selectedYearRef.current?.scrollIntoView({ block: "center" });
+  }, [pickerView]);
+
   const openDatePicker = () => {
-    const picker = datePickerRef.current;
-    if (!picker) return;
-    if (typeof picker.showPicker === "function") picker.showPicker();
-    else picker.click();
+    const dateToShow = selectedDate || new Date();
+    setVisibleDate(new Date(dateToShow.getFullYear(), dateToShow.getMonth(), 1));
+    setPickerView("days");
+    setIsOpen(true);
   };
-  const changeDate = (event) => {
-    onChange(event.target.value);
+  const selectDate = (day) => {
+    onChange(`${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
+    setIsOpen(false);
   };
 
   return (
-    <div className="date-input-wrap">
+    <>
       <input
-        className="date-text"
+        className="date-picker-trigger"
         type="text"
         placeholder="DD/MM/YYYY"
         value={toGbDate(value)}
         readOnly
+        aria-haspopup="dialog"
         onClick={openDatePicker}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openDatePicker();
+          }
+        }}
       />
-      <input
-        ref={datePickerRef}
-        className="date-picker-native"
-        type="date"
-        lang="en-GB"
-        aria-label="Choose date from calendar"
-        value={value}
-        onChange={changeDate}
-      />
-    </div>
+      {isOpen && (
+        <div
+          className="date-picker-overlay"
+          role="presentation"
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className="date-picker-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Choose a date"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="date-picker-header">
+              <h3>{pickerView === "years" ? "Select year" : pickerView === "months" ? "Select month" : monthLabel}</h3>
+              <div className="date-picker-selects">
+                {pickerView === "days" && (
+                  <button
+                    type="button"
+                    className="date-picker-month-button"
+                    aria-label={`Select month, currently ${monthLabel}`}
+                    onClick={() => setPickerView("months")}
+                  >
+                    {new Date(2000, month, 1).toLocaleDateString("en-GB", { month: "long" })} ▾
+                  </button>
+                )}
+                {pickerView !== "years" && (
+                  <button
+                    type="button"
+                    className="date-picker-year-button"
+                    aria-label={`Select year, currently ${year}`}
+                    onClick={() => setPickerView("years")}
+                  >
+                    {year} ▾
+                  </button>
+                )}
+              </div>
+            </div>
+            {pickerView === "years" ? (
+              <div className="date-picker-years" role="group" aria-label="Select year">
+                {years.map((optionYear) => (
+                  <button
+                    key={optionYear}
+                    ref={optionYear === year ? selectedYearRef : null}
+                    type="button"
+                    aria-pressed={optionYear === year}
+                    onClick={() => {
+                      setVisibleDate(new Date(optionYear, month, 1));
+                      setPickerView("months");
+                    }}
+                  >
+                    {optionYear}
+                  </button>
+                ))}
+              </div>
+            ) : pickerView === "months" ? (
+              <div className="date-picker-months" role="group" aria-label="Select month">
+                {Array.from({ length: 12 }, (_, optionMonth) => (
+                  <button
+                    key={optionMonth}
+                    type="button"
+                    aria-pressed={optionMonth === month}
+                    onClick={() => {
+                      setVisibleDate(new Date(year, optionMonth, 1));
+                      setPickerView("days");
+                    }}
+                  >
+                    {new Date(2000, optionMonth, 1).toLocaleDateString("en-GB", { month: "short" })}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <>
+                <div className="date-picker-weekdays" aria-hidden="true">
+                  {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => <span key={day}>{day}</span>)}
+                </div>
+                <div className="date-picker-days">
+                  {calendarDays.map((day, index) => day === null
+                    ? <span key={`empty-${index}`} />
+                    : (
+                      <button
+                        key={day}
+                        type="button"
+                        aria-label={`${day} ${monthLabel}`}
+                        aria-pressed={selectedDate?.getFullYear() === year &&
+                          selectedDate?.getMonth() === month &&
+                          selectedDate?.getDate() === day}
+                        onClick={() => selectDate(day)}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                </div>
+              </>
+            )}
+            <div className="date-picker-actions">
+              <button type="button" onClick={() => { onChange(""); setIsOpen(false); }}>Clear</button>
+              <button type="button" onClick={() => setIsOpen(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -398,8 +556,48 @@ function Summary({ rows }) {
 
 function PhotoRow({ label, file }) {
   const url = useObjectUrl(file);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => {
+    if (!previewOpen) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setPreviewOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [previewOpen]);
   if (!url) return null;
-  return <div className="sum-photo"><span>{label}</span><img src={url} alt={label} /></div>;
+  return (
+    <>
+      <div className="sum-photo">
+        {label && <span>{label}</span>}
+        <button
+          type="button"
+          className="photo-thumb review-photo-thumb"
+          aria-label={`View enlarged ${label || "photo"}`}
+          onClick={() => setPreviewOpen(true)}
+        >
+          <img src={url} alt={label || "Uploaded photo"} />
+        </button>
+      </div>
+      {previewOpen && createPortal(
+        <div className="photo-preview-overlay" role="presentation" onClick={() => setPreviewOpen(false)}>
+          <div
+            className="photo-preview-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Enlarged ${label || "photo"}`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button type="button" className="photo-preview-close" aria-label="Close enlarged photo" onClick={() => setPreviewOpen(false)}>
+              ×
+            </button>
+            <img src={url} alt={label || "Enlarged uploaded photo"} />
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
+  );
 }
 
 export default function EmployeeESIForm() {
@@ -423,6 +621,7 @@ export default function EmployeeESIForm() {
 
   const count = Number(d.childCount);
   const married = d.marital === "Married";
+  const showChildren = d.marital.trim().toLowerCase() !== "unmarried";
 
   const validate = () => {
     const e = {};
@@ -433,6 +632,7 @@ export default function EmployeeESIForm() {
     };
     if (step === 0) {
       req("empId"); req("empName"); dateReq("doj"); dateReq("dob"); req("gender", "Select gender");
+      if (d.empId.trim().length !== 6) e.empId = "Employee ID must be exactly 6 characters";
       req("marital", "Select marital status"); req("address"); req("state", "Select state");
       if (!/^[6-9]\d{9}$/.test(d.mobile)) e.mobile = "Enter a valid 10-digit mobile number";
       if (!/^\d{12}$/.test(d.aadhar)) e.aadhar = "Aadhar must be 12 digits";
@@ -447,11 +647,13 @@ export default function EmployeeESIForm() {
         req("spouseName"); dateReq("spouseDob");
         if (!d.spousePhoto) e.spousePhoto = "Upload spouse photograph";
       }
-      for (let i = 0; i < count; i++) {
-        if (!d.children[i].name.trim()) e[`c${i}name`] = "Required";
-        if (!d.children[i].dob) e[`c${i}dob`] = "Required";
-        else if (!isValidDate(d.children[i].dob)) e[`c${i}dob`] = "Enter a valid date as DD/MM/YYYY";
-        if (!d.children[i].photo) e[`c${i}photo`] = "Upload photograph";
+      if (showChildren) {
+        for (let i = 0; i < count; i++) {
+          if (!d.children[i].name.trim()) e[`c${i}name`] = "Required";
+          if (!d.children[i].dob) e[`c${i}dob`] = "Required";
+          else if (!isValidDate(d.children[i].dob)) e[`c${i}dob`] = "Enter a valid date as DD/MM/YYYY";
+          if (!d.children[i].photo) e[`c${i}photo`] = "Upload photograph";
+        }
       }
     }
     if (step === 2) {
@@ -477,7 +679,7 @@ export default function EmployeeESIForm() {
       const photoEntries = [
         ["photo", d.photo],
         ...(married ? [["spousePhoto", d.spousePhoto]] : []),
-        ...d.children.slice(0, count).map((child, index) => [`child${index + 1}Photo`, child.photo]),
+        ...(showChildren ? d.children.slice(0, count).map((child, index) => [`child${index + 1}Photo`, child.photo]) : []),
         ...(d.includeParents === "Yes" ? [["fatherPhoto", d.fatherPhoto], ["motherPhoto", d.motherPhoto]] : []),
       ];
       const compressedPhotos = await Promise.all(
@@ -493,7 +695,7 @@ export default function EmployeeESIForm() {
         photo: compressedByName.photo,
         spousePhoto: married ? compressedByName.spousePhoto : current.spousePhoto,
         children: current.children.map((child, index) => (
-          index < count ? { ...child, photo: compressedByName[`child${index + 1}Photo`] } : child
+          showChildren && index < count ? { ...child, photo: compressedByName[`child${index + 1}Photo`] } : child
         )),
         fatherPhoto: d.includeParents === "Yes" ? compressedByName.fatherPhoto : current.fatherPhoto,
         motherPhoto: d.includeParents === "Yes" ? compressedByName.motherPhoto : current.motherPhoto,
@@ -518,8 +720,8 @@ export default function EmployeeESIForm() {
         motherName: d.motherName,
         spouseName: d.spouseName,
         spouseDateOfBirth: d.spouseDob,
-        childCount: count,
-        children: d.children.slice(0, count).map((child) => ({
+        childCount: showChildren ? count : 0,
+        children: (showChildren ? d.children.slice(0, count) : []).map((child) => ({
           name: child.name,
           dateOfBirth: child.dob,
         })),
@@ -579,7 +781,7 @@ export default function EmployeeESIForm() {
               <section className="esi-card esi-personal-card">
                 <h2>Personal details</h2>
                 <Field label="Employee ID" error={errors.empId}>
-                  <input type="text" value={d.empId} onChange={(e) => set("empId", e.target.value)} />
+                  <input type="text" maxLength={6} value={d.empId} onChange={(e) => set("empId", e.target.value)} />
                 </Field>
                 <Field label="Employee name" error={errors.empName}>
                   <input type="text" value={d.empName} onChange={(e) => set("empName", e.target.value)} />
@@ -647,7 +849,7 @@ export default function EmployeeESIForm() {
                   </select>
                 </Field>
                 <Field label="Pincode" error={errors.pincode}>
-                  <input type="tel" inputMode="numeric" value={d.pincode} onChange={num("pincode", 6)} />
+                  <input type ="tel" inputMode="numeric" value={d.pincode} onChange={num("pincode", 6)} />
                 </Field>
                 <Field label="Address" error={errors.address}>
                   <textarea value={d.address} onChange={(e) => set("address", e.target.value)} />
@@ -661,10 +863,10 @@ export default function EmployeeESIForm() {
             <>
               <section className="esi-card esi-family-card">
                 <h2>Family details</h2>
-                <Field label="Father name" error={errors.fatherName}>
+                <Field label="Father name(తండ్రి పేరు)" error={errors.fatherName}>
                   <input type="text" value={d.fatherName} onChange={(e) => set("fatherName", e.target.value)} />
                 </Field>
-                <Field label="Mother name" error={errors.motherName}>
+                <Field label="Mother name(తల్లి పేరు)" error={errors.motherName}>
                   <input type="text" value={d.motherName} onChange={(e) => set("motherName", e.target.value)} />
                 </Field>
               </section>
@@ -672,7 +874,7 @@ export default function EmployeeESIForm() {
               {married && (
                 <section className="esi-card esi-spouse-card">
                   <h2>Spouse</h2>
-                  <Field label="Spouse name" error={errors.spouseName}>
+                  <Field label="Spouse name(భర్త / భార్య పేరు)" error={errors.spouseName}>
                     <input type="text" value={d.spouseName} onChange={(e) => set("spouseName", e.target.value)} />
                   </Field>
                   <Field label="Spouse date of birth" error={errors.spouseDob}>
@@ -682,44 +884,46 @@ export default function EmployeeESIForm() {
                 </section>
               )}
 
-              <section className="esi-card esi-children-card">
-                <h2>Children</h2>
-                <Field label="Number of children">
-                  <select
-                    value={d.childCount}
-                    onChange={(e) => {
-                      const nextCount = Number(e.target.value);
-                      set("childCount", e.target.value);
-                      setChildIndex((current) => Math.min(current, Math.max(0, nextCount - 1)));
-                    }}
-                  >
-                    {[0, 1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
-                  </select>
-                </Field>
-                {count > 1 && (
-                  <div className="child-nav">
-                    <button type="button" className="btn sec" disabled={childIndex === 0} onClick={() => setChildIndex((current) => current - 1)}>
-                      Previous child
-                    </button>
-                    <span aria-live="polite">Child {childIndex + 1} of {count}</span>
-                    <button type="button" className="btn sec" disabled={childIndex === count - 1} onClick={() => setChildIndex((current) => current + 1)}>
-                      Next child
-                    </button>
-                  </div>
-                )}
-                {count > 0 && (
-                  <div className="child" key={childIndex}>
-                    <h3>Child {childIndex + 1}</h3>
-                    <Field label={`Child ${childIndex + 1} name`} error={errors[`c${childIndex}name`]}>
-                      <input type="text" value={d.children[childIndex].name} onChange={(e) => setChild(childIndex, "name", e.target.value)} />
-                    </Field>
-                    <Field label={`Child ${childIndex + 1} date of birth`} error={errors[`c${childIndex}dob`]}>
-                      <DateInput value={d.children[childIndex].dob} onChange={(v) => setChild(childIndex, "dob", v)} />
-                    </Field>
-                    <Photo label={`Child ${childIndex + 1} photograph`} file={d.children[childIndex].photo} onChange={(f) => setChild(childIndex, "photo", f)} error={errors[`c${childIndex}photo`]} zoomable browsePreview />
-                  </div>
-                )}
-              </section>
+              {showChildren && (
+                <section className="esi-card esi-children-card">
+                  <h2>Children</h2>
+                  <Field label="Number of children">
+                    <select
+                      value={d.childCount}
+                      onChange={(e) => {
+                        const nextCount = Number(e.target.value);
+                        set("childCount", e.target.value);
+                        setChildIndex((current) => Math.min(current, Math.max(0, nextCount - 1)));
+                      }}
+                    >
+                      {[0, 1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
+                    </select>
+                  </Field>
+                  {count > 1 && (
+                    <div className="child-nav">
+                      <button type="button" className="btn sec" disabled={childIndex === 0} onClick={() => setChildIndex((current) => current - 1)}>
+                        Previous child
+                      </button>
+                      <span aria-live="polite">Child {childIndex + 1} of {count}</span>
+                      <button type="button" className="btn sec" disabled={childIndex === count - 1} onClick={() => setChildIndex((current) => current + 1)}>
+                        Next child
+                      </button>
+                    </div>
+                  )}
+                  {count > 0 && (
+                    <div className="child" key={childIndex}>
+                      <h3>Child {childIndex + 1}</h3>
+                      <Field label={`Child ${childIndex + 1} name`} error={errors[`c${childIndex}name`]}>
+                        <input type="text" value={d.children[childIndex].name} onChange={(e) => setChild(childIndex, "name", e.target.value)} />
+                      </Field>
+                      <Field label={`Child ${childIndex + 1} date of birth`} error={errors[`c${childIndex}dob`]}>
+                        <DateInput value={d.children[childIndex].dob} onChange={(v) => setChild(childIndex, "dob", v)} />
+                      </Field>
+                      <Photo label={`Child ${childIndex + 1} photograph`} file={d.children[childIndex].photo} onChange={(f) => setChild(childIndex, "photo", f)} error={errors[`c${childIndex}photo`]} zoomable browsePreview />
+                    </div>
+                  )}
+                </section>
+              )}
             </>
           )}
 
@@ -785,24 +989,28 @@ export default function EmployeeESIForm() {
                     </table>
                     </div>
                   )}
-                  <h3 className="review-children-title">Children</h3>
-                  <div className={"review-children-table-wrap" + (count > 2 ? " review-children-scroll" : "")}>
-                    <table className="review-children-table">
-                      <thead>
-                        <tr><th>Child name</th><th>Date of birth</th><th>Image</th></tr>
-                      </thead>
-                      <tbody>
-                        {d.children.slice(0, count).map((child, i) => (
-                          <tr key={i}>
-                            <td>{child.name || "Not entered"}</td>
-                            <td>{displayDate(child.dob) || "Not entered"}</td>
-                            <td>{child.photo ? <PhotoRow label={`Child ${i + 1}`} file={child.photo} /> : <span className="review-no-photo">Not uploaded</span>}</td>
-                          </tr>
-                        ))}
-                        {count === 0 && <tr><td colSpan="3">No children added</td></tr>}
-                      </tbody>
-                    </table>
-                  </div>
+                  {showChildren && (
+                    <>
+                      <h3 className="review-children-title">Children</h3>
+                      <div className={"review-children-table-wrap" + (count > 2 ? " review-children-scroll" : "")}>
+                        <table className="review-children-table">
+                          <thead>
+                            <tr><th>Child name</th><th>Date of birth</th><th>Image</th></tr>
+                          </thead>
+                          <tbody>
+                            {d.children.slice(0, count).map((child, i) => (
+                              <tr key={i}>
+                                <td>{child.name || "Not entered"}</td>
+                                <td>{displayDate(child.dob) || "Not entered"}</td>
+                                <td>{child.photo ? <PhotoRow label={`Child ${i + 1}`} file={child.photo} /> : <span className="review-no-photo">Not uploaded</span>}</td>
+                              </tr>
+                            ))}
+                            {count === 0 && <tr><td colSpan="3">No children added</td></tr>}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  )}
                 </section>
 
                 <section className="esi-card esi-review-parents">

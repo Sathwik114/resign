@@ -52,6 +52,9 @@ export async function POST(request) {
     if (requiredText.some((key) => typeof details[key] !== "string" || !details[key].trim())) {
       return NextResponse.json({ error: "Complete all required form details." }, { status: 400 });
     }
+    if (details.employeeId.trim().length !== 6) {
+      return NextResponse.json({ error: "Employee ID must be exactly 6 characters." }, { status: 400 });
+    }
     if (!isValidDate(details.dateOfJoining) || !isValidDate(details.dateOfBirth)) {
       return NextResponse.json({ error: "Enter valid employee dates." }, { status: 400 });
     }
@@ -110,34 +113,34 @@ export async function POST(request) {
     }
 
     const data = {
-      EmployeeId: details.employeeId.trim(),
-      EmployeeName: details.employeeName.trim(),
-      DateOfJoining: asDate(details.dateOfJoining),
-      DateOfBirth: asDate(details.dateOfBirth),
+      EmpID: details.employeeId.trim(),
+      EmpName: details.employeeName.trim(),
+      DOJ: asDate(details.dateOfJoining),
+      DOB: asDate(details.dateOfBirth),
       Gender: details.gender,
-      MobileNumber: details.mobileNumber,
-      AadharNumber: details.aadharNumber,
+      MobileNo: details.mobileNumber,
+      AadharNo: details.aadharNumber,
       MaritalStatus: details.maritalStatus,
-      HasPreviousEsi: details.hasPreviousEsi === true,
-      PreviousEsiNumber: details.hasPreviousEsi ? details.previousEsiNumber : null,
+      HasPrevESI: details.hasPreviousEsi === true,
+      PrevESINo: details.hasPreviousEsi ? details.previousEsiNumber : null,
       Address: details.address.trim(),
       State: details.state,
       Pincode: details.pincode,
-      Photograph: images.photo.data,
+      EmpImg: images.photo.data,
       PhotographMimeType: images.photo.mimeType,
       FatherName: details.fatherName.trim(),
       MotherName: details.motherName.trim(),
       SpouseName: married ? details.spouseName.trim() : null,
-      SpouseDateOfBirth: married ? asDate(details.spouseDateOfBirth) : null,
-      SpousePhotograph: images.spousePhoto?.data ?? null,
+      SpouseDOB: married ? asDate(details.spouseDateOfBirth) : null,
+      SpouseImg: images.spousePhoto?.data ?? null,
       SpousePhotoMimeType: images.spousePhoto?.mimeType ?? null,
       ChildCount: childCount,
-      IncludesParents: details.includesParents,
-      FatherDateOfBirth: details.includesParents ? asDate(details.fatherDateOfBirth) : null,
-      FatherPhotograph: images.fatherPhoto?.data ?? null,
+      IncludeParents: details.includesParents,
+      FatherDOB: details.includesParents ? asDate(details.fatherDateOfBirth) : null,
+      FatherImg: images.fatherPhoto?.data ?? null,
       FatherPhotoMimeType: images.fatherPhoto?.mimeType ?? null,
-      MotherDateOfBirth: details.includesParents ? asDate(details.motherDateOfBirth) : null,
-      MotherPhotograph: images.motherPhoto?.data ?? null,
+      MotherDOB: details.includesParents ? asDate(details.motherDateOfBirth) : null,
+      MotherImg: images.motherPhoto?.data ?? null,
       MotherPhotoMimeType: images.motherPhoto?.mimeType ?? null,
     };
 
@@ -146,18 +149,18 @@ export async function POST(request) {
       const image = images[`child${index + 1}Photo`];
       const fieldIndex = index + 1;
       data[`Child${fieldIndex}Name`] = child?.name.trim() ?? null;
-      data[`Child${fieldIndex}DateOfBirth`] = child ? asDate(child.dateOfBirth) : null;
-      data[`Child${fieldIndex}Photograph`] = image?.data ?? null;
+      data[`Child${fieldIndex}DOB`] = child ? asDate(child.dateOfBirth) : null;
+      data[`Child${fieldIndex}Img`] = image?.data ?? null;
       data[`Child${fieldIndex}PhotoMimeType`] = image?.mimeType ?? null;
     }
 
     await prisma.esiEmployee.upsert({
-      where: { EmployeeId: data.EmployeeId },
+      where: { EmpID: data.EmpID },
       create: data,
       update: data,
     });
 
-    return NextResponse.json({ success: true, employeeId: data.EmployeeId });
+    return NextResponse.json({ success: true, employeeId: data.EmpID });
   } catch (error) {
     if (error instanceof Error && error.message.includes("image")) {
       return NextResponse.json({ error: error.message }, { status: 400 });

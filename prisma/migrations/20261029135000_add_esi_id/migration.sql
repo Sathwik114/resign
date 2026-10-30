@@ -1,0 +1,12 @@
+CREATE SEQUENCE [dbo].[EsiIdSequence]
+    AS INT
+    START WITH 1000
+    INCREMENT BY 1;
+
+ALTER TABLE [dbo].[EsiEmployee]
+ADD [ESIID] NVARCHAR(20) NOT NULL
+    CONSTRAINT [DF_EsiEmployee_ESIID]
+    DEFAULT (N'ESI' + CONVERT(NVARCHAR(16), NEXT VALUE FOR [dbo].[EsiIdSequence]));
+
+ALTER TABLE [dbo].[EsiEmployee]
+ADD CONSTRAINT [UQ_EsiEmployee_ESIID] UNIQUE ([ESIID]);

@@ -243,10 +243,94 @@
   font-size: 22px;
 }
 
+.esiApplicationsStatusCard {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  min-width: min(700px, 65%);
+  padding: 9px 12px;
+  border: 1px solid #d3dedb;
+  border-radius: 8px;
+  background: #fcfefd;
+}
+
+.esiApplicationsStatusCard .isVerified > strong {
+  color: #0f766e;
+}
+
+.esiApplicationsStatusCard .isNotVerified > strong {
+  color: #b45309;
+}
+
 .esiApplicationsHeader p {
   margin: 5px 0 0;
   color: #64748b;
   font-size: 13px;
+}
+
+.esiApplicationsSearch {
+  flex: 0 1 420px;
+  min-width: 220px;
+  padding: 9px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #1e293b;
+  font: inherit;
+}
+
+.esiApplicationsSearch:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
+.esiApplicationsExportButton {
+  flex: none;
+  padding: 9px 12px;
+  border: 1px solid #0f766e;
+  border-radius: 7px;
+  background: #0f766e;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.esiApplicationsExportButton:hover:not(:disabled) {
+  background: #0b5a54;
+}
+
+.esiApplicationsExportButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.verifiedApplicationsFilters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex: none;
+}
+
+.verifiedApplicationsFilters label {
+  display: grid;
+  gap: 5px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.verifiedApplicationsFilters select,
+.verifiedApplicationsFilters input {
+  min-width: 160px;
+  min-height: 36px;
+  padding: 6px 9px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e293b;
+  font: inherit;
 }
 
 .esiApplicationsBack {
@@ -301,7 +385,7 @@
 .esiApplicationsTable th,
 .esiApplicationsTable td {
   max-width: 320px;
-  padding: 8px 10px;
+  padding: 5px 8px;
   border-right: 1px solid #e2e8f0;
   border-bottom: 1px solid #e2e8f0;
   text-align: left;
@@ -321,10 +405,97 @@
   white-space: pre-wrap;
 }
 
+.esiApplicationsDataRow {
+  cursor: pointer;
+}
+
+.esiApplicationsDataRow:hover {
+  background: #f8fafc;
+}
+
+.esiApplicationsVerifyButton {
+  margin-left: 6px;
+  padding: 5px 9px;
+  border: 1px solid #0f766e;
+  border-radius: 6px;
+  background: #0f766e;
+  color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.esiApplicationsVerifyButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.esiApplicationsDeleteButton,
+.esiApplicationsCancelButton {
+  margin-left: 6px;
+  padding: 5px 9px;
+  border: 1px solid #b91c1c;
+  border-radius: 6px;
+  background: #b91c1c;
+  color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.esiApplicationsCancelButton {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.esiApplicationsDeleteButton:disabled,
+.esiApplicationsCancelButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.esiApplicationsVerifyError {
+  display: block;
+  margin-top: 4px;
+  color: #b91c1c;
+}
+
+.esiApplicationsConfirmDialog {
+  width: min(100%, 440px);
+  padding: 24px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.3);
+}
+
+.esiApplicationsConfirmDialog h2 {
+  margin: 0 0 12px;
+  color: #1e293b;
+  font-size: 19px;
+}
+
+.esiApplicationsConfirmDialog p {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.esiApplicationsConfirmDialog .esiApplicationsConfirmError {
+  margin-top: 12px;
+  color: #b91c1c;
+}
+
+.esiApplicationsConfirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 22px;
+}
+
 .esiApplicationsThumbnail {
   display: block;
-  width: 56px;
-  height: 56px;
+  width: 36px;
+  height: 36px;
   object-fit: cover;
   border-radius: 5px;
 }
@@ -353,6 +524,247 @@
   justify-content: center;
   padding: 24px;
   background: rgba(15, 23, 42, 0.78);
+}
+
+.esiApplicationsDetailsSections {
+  display: grid;
+  flex: 1;
+  gap: 14px;
+  min-height: 0;
+  align-content: start;
+  padding: 4px 2px 12px;
+  overflow: auto;
+}
+
+.esiApplicationsDetailsSection {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #d3dedb;
+  border-radius: 9px;
+  background: #fcfefd;
+}
+
+.esiApplicationsDetailsSection h3 {
+  margin: 0 0 12px;
+  color: #0f766e;
+  font-size: 16px;
+}
+
+.esiApplicationsDetailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.esiApplicationsFamilyParents {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+  align-items: start;
+  gap: 10px;
+}
+
+.esiApplicationsFamilyDetails,
+.esiApplicationsParentsDetails {
+  display: grid;
+  align-items: start;
+  gap: 12px;
+}
+
+.esiApplicationsFamilyDetails {
+  grid-template-columns: minmax(0, 1fr) max-content;
+  column-gap: 16px;
+}
+
+.esiApplicationsFamilyPhoto .esiApplicationsDetailItem {
+  align-items: center;
+  text-align: center;
+}
+
+.esiApplicationsFamilyPhoto .esiApplicationsDetailPreview {
+  width: 100px;
+  height: 100px;
+  min-height: 100px;
+  flex: none;
+  object-fit: cover;
+}
+
+.esiApplicationsFamilyPhoto .esiApplicationsDetailPreviewPlaceholder,
+.esiApplicationsParentsPhotos .esiApplicationsDetailPreviewPlaceholder {
+  display: grid;
+  width: 100px;
+  height: 100px;
+  flex: none;
+  place-items: center;
+  border: 1px solid #d3dedb;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.esiApplicationsFamilyPhoto .esiApplicationsDownloadPlaceholder,
+.esiApplicationsParentsPhotos .esiApplicationsDownloadPlaceholder {
+  width: fit-content;
+  padding: 5px 6px;
+  border: 1px solid transparent;
+  font-size: 11px;
+  visibility: hidden;
+}
+
+.esiApplicationsFamilyPhoto .esiApplicationsDownloadButton {
+  padding: 5px 6px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.esiApplicationsParentsDetails {
+  grid-template-columns: minmax(0, 1fr) max-content;
+  column-gap: 16px;
+}
+
+.esiApplicationsFamilyDetailsFields,
+.esiApplicationsParentsDetailsFields {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.esiApplicationsFamilyDetailsRow,
+.esiApplicationsParentsDetailsRow {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.esiApplicationsParentsDetailsRow {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+}
+
+.esiApplicationsParentsPhotos {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 12px;
+}
+
+.esiApplicationsParentsPhotos .esiApplicationsDetailItem {
+  align-items: center;
+  text-align: center;
+}
+
+.esiApplicationsParentsPhotos .esiApplicationsDetailPreview {
+  width: 100px;
+  height: 100px;
+  min-height: 100px;
+  flex: none;
+  object-fit: cover;
+}
+
+.esiApplicationsParentsPhotos .esiApplicationsDownloadButton {
+  padding: 5px 6px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.esiApplicationsPersonalDetails {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px;
+  align-items: start;
+  gap: 16px;
+}
+
+.esiApplicationsPersonalDetailsFields {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.esiApplicationsPersonalDetailsRow {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.esiApplicationsPersonalDetailsAddressRow > :last-child {
+  grid-column: span 5;
+}
+
+.esiApplicationsPersonalDetailsPhoto .esiApplicationsDetailItem {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.esiApplicationsDetailItem {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+  overflow-wrap: anywhere;
+}
+
+.esiApplicationsDetailItem > span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.esiApplicationsDetailItem > strong {
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: pre-wrap;
+}
+
+.esiApplicationsDetailPreview {
+  display: block;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border: 1px solid #d3dedb;
+  border-radius: 6px;
+}
+
+.esiApplicationsDownloadButton,
+.esiApplicationsBackButton {
+  width: fit-content;
+  padding: 7px 11px;
+  border: 1px solid #0f766e;
+  border-radius: 6px;
+  background: #0f766e;
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.esiApplicationsBackButton {
+  background: #ffffff;
+  color: #0f766e;
+}
+
+.esiApplicationsDownloadButton:hover,
+.esiApplicationsBackButton:hover {
+  filter: brightness(0.95);
+}
+
+.esiApplicationsChildDetails {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+}
+
+.esiApplicationsChildDetails h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.esiApplicationsNoDetails {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
 }
 
 .esiApplicationsImageDialog {
@@ -403,7 +815,77 @@
 
 .esiApplicationsPagination > div {
   display: flex;
+  align-items: center;
   gap: 8px;
+}
+
+.esiApplicationsPaginationActions {
+  flex-wrap: wrap;
+}
+
+.esiApplicationsTable input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0f766e;
+  cursor: pointer;
+}
+
+.manageApplicationsPage .esiApplicationsDeleteButton {
+  border-color: #b91c1c;
+  background: #ffffff;
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.manageApplicationsPage .esiApplicationsDeleteButton:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.manageApplicationsFilters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex: none;
+}
+
+.manageApplicationsFilters label {
+  display: grid;
+  gap: 5px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.manageApplicationsFilters select,
+.manageApplicationsFilters input {
+  min-width: 150px;
+  min-height: 36px;
+  padding: 6px 9px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e293b;
+  font: inherit;
+}
+
+.manageApplicationsFilters .esiApplicationsDeleteButton {
+  min-height: 36px;
+  margin-left: auto;
+}
+
+.manageApplicationsTable a {
+  color: #0369a1;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.manageApplicationsTable a:hover {
+  text-decoration: underline;
+}
+
+.manageApplicationsPagination {
+  flex: none;
 }
 
 @media (max-width: 700px) {
@@ -433,6 +915,87 @@
 
   .esiApplicationsHeader h1 {
     font-size: 18px;
+  }
+
+  .esiApplicationsHeader {
+    flex-wrap: wrap;
+  }
+
+  .manageApplicationsFilters {
+    align-items: stretch;
+  }
+
+  .manageApplicationsFilters label {
+    flex: 1 1 140px;
+  }
+
+  .manageApplicationsFilters select,
+  .manageApplicationsFilters input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .manageApplicationsFilters .esiApplicationsDeleteButton {
+    margin-left: 0;
+  }
+
+  .esiApplicationsSearch {
+    flex: 1 0 100%;
+    min-width: 0;
+  }
+
+  .verifiedApplicationsFilters {
+    align-items: stretch;
+  }
+
+  .verifiedApplicationsFilters label {
+    flex: 1 1 140px;
+  }
+
+  .verifiedApplicationsFilters select,
+  .verifiedApplicationsFilters input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .esiApplicationsStatusCard {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .esiApplicationsDetailsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .esiApplicationsFamilyParents {
+    grid-template-columns: 1fr;
+  }
+
+  .esiApplicationsFamilyDetails,
+  .esiApplicationsParentsDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .esiApplicationsParentsDetailsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .esiApplicationsPersonalDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .esiApplicationsPersonalDetailsRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .esiApplicationsPersonalDetailsAddressRow > :last-child {
+    grid-column: span 1;
+  }
+
+  .esiApplicationsPersonalDetailsPhoto {
+    justify-self: end;
   }
 }
 
