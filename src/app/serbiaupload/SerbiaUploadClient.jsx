@@ -319,77 +319,46 @@ export default function SerbiaUploadClient() {
       {showDetails && (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col w-full flex-1 min-h-0">
           {/* Header */}
-          <div className="px-4 py-2.5 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50 shrink-0">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-slate-800">Serbia Employee Master Details</h3>
-                <span className="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-md border border-emerald-200">
-                  SerbiaEmpMast
-                </span>
-              </div>
-              <span className="text-xs text-slate-500 font-medium mt-0.5">
-                Live records directly from the database table
-              </span>
-            </div>
+          <div className="px-3 py-1.5 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5 bg-slate-50 shrink-0">
+            <h3 className="font-bold text-sm text-slate-800">Serbia Employee Master Details</h3>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="relative min-w-0 flex-1 sm:w-72 sm:flex-none">
+                <input
+                  type="text"
+                  aria-label="Search Serbia employee records"
+                  placeholder="Search code, name, dept, designation..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full text-xs border border-slate-200 rounded-lg pl-8 pr-8 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white placeholder:text-slate-400"
+                />
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+                {searchTerm && (
+                  <button
+                    type="button"
+                    aria-label="Clear search"
+                    onClick={() => {
+                      setSearchTerm("");
+                      setCurrentPage(1);
+                    }}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer font-bold"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={handleExportCsv}
-                disabled={!detailsData || detailsData.length === 0}
+                disabled={!detailsData || filteredDetails.length === 0}
                 className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-sm"
               >
                 <span>📥</span>
                 <span>Export CSV</span>
               </button>
-              <button
-                type="button"
-                onClick={fetchDetailsData}
-                disabled={detailsLoading}
-                className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-lg transition cursor-pointer disabled:opacity-50 flex items-center gap-1.5 shadow-sm"
-              >
-                <span className={detailsLoading ? "animate-spin" : ""}>🔄</span>
-                <span>{detailsLoading ? "Loading..." : "Refresh"}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Search bar & count summary */}
-          <div className="px-4 py-2 border-b border-slate-100 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 shrink-0">
-            <div className="relative flex-1 max-w-sm">
-              <input
-                type="text"
-                placeholder="Search code, name, dept, designation..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full text-xs border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-slate-50/50 placeholder:text-slate-400"
-              />
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
-              {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchTerm("");
-                    setCurrentPage(1);
-                  }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer font-bold"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            <div className="text-xs text-slate-500 font-medium text-right whitespace-nowrap">
-              {detailsData ? (
-                <>
-                  Showing <strong>{filteredDetails.length}</strong> of <strong>{detailsData.length}</strong> total records
-                </>
-              ) : (
-                "Fetching records..."
-              )}
             </div>
           </div>
 

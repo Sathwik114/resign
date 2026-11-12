@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getEsiFormEnabled } from "@/lib/esiFormSettings";
 
 export const runtime = "nodejs";
 
@@ -23,6 +24,13 @@ export async function POST(request) {
   }
 
   try {
+    if (!(await getEsiFormEnabled())) {
+      return NextResponse.json(
+        { error: "This page has been temporarily disabled by the administrator." },
+        { status: 404 },
+      );
+    }
+
     let formData;
     try {
       formData = await request.formData();
@@ -62,6 +70,26 @@ export async function POST(request) {
       typeof details.aadharNumber !== "string" || !/^\d{12}$/.test(details.aadharNumber) ||
       !/^\d{6}$/.test(details.pincode)) {
       return NextResponse.json({ error: "Mobile, Aadhaar, or pincode is invalid." }, { status: 400 });
+    }
+    const existingEmployeeId = await prisma.esiEmployee.findUnique({
+      where: { EmpID: details.employeeId.trim() },
+      select: { EmpID: true },
+    });
+    if (existingEmployeeId) {
+      return NextResponse.json(
+        { error: "Already registered with this employee ID." },
+        { status: 409 },
+      );
+    }
+    const existingAadhar = await prisma.esiEmployee.findFirst({
+      where: { AadharNo: details.aadharNumber },
+      select: { EmpID: true },
+    });
+    if (existingAadhar) {
+      return NextResponse.json(
+        { error: "Already registered with this Aadhaar number." },
+        { status: 409 },
+      );
     }
     if (details.hasPreviousEsi === true &&
       (typeof details.previousEsiNumber !== "string" || !/^\d{1,20}$/.test(details.previousEsiNumber))) {
@@ -154,14 +182,16 @@ export async function POST(request) {
       data[`Child${fieldIndex}PhotoMimeType`] = image?.mimeType ?? null;
     }
 
-    await prisma.esiEmployee.upsert({
-      where: { EmpID: data.EmpID },
-      create: data,
-      update: data,
-    });
+    await prisma.esiEmployee.create({ data });
 
     return NextResponse.json({ success: true, employeeId: data.EmpID });
   } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
+      return NextResponse.json(
+        { error: "Already registered with this employee ID." },
+        { status: 409 },
+      );
+    }
     if (error instanceof Error && error.message.includes("image")) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

@@ -61,19 +61,20 @@ model EsiEmployee {
   MotherDOB           DateTime? @db.Date
   MotherImg           Bytes?    @db.VarBinary(Max)
   MotherPhotoMimeType String?   @db.VarChar(100)
-  Verification        String    @default("Not Verified") @db.VarChar(20)
-  VerifiedBy          String?   @db.NVarChar(200)
-  VerifiedAt          DateTime? @db.DateTime2
-
   CreatedAt DateTime @default(now()) @db.DateTime2
   UpdatedAt DateTime @updatedAt @db.DateTime2
+  UptdBy String? @db.NVarChar(200)
+  UptdAt DateTime? @db.DateTime2
 
   @@map("EsiEmployee")
 }
 
 model ResignLoginMast {
-  EmpCode String @unique @db.VarChar(10)
-  EmpName String @db.VarChar(50)
+  EmpCode     String @unique @db.VarChar(10)
+  EmpName     String @db.VarChar(50)
+  ResLog      String @default("N") @db.Char(1)
+  ESILog      String @default("N") @db.Char(1)
+  ESIApplMnge String @default("N") @db.Char(1)
 
   @@map("ResignLoginMast")
 }

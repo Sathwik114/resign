@@ -69,10 +69,15 @@ const css = `
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;color:var(--ink);background:var(--bg);min-height:100vh;box-sizing:border-box;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 .esi *{box-sizing:border-box}
 .esi-wrap{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
-.esi-head{padding:14px 18px 12px;background:#ffffff;color:#1b2b2a;border-bottom:1px solid #e1e9e7;position:-webkit-sticky;position:sticky;top:0;z-index:4;box-shadow:0 2px 8px rgba(20,50,48,.06)}
-.esi-title{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
-.esi-title h1{margin:0;font-size:16px;font-weight:700}
+.esi-head{display:flex;align-items:stretch;background:#ffffff;color:#1b2b2a;border-bottom:1px solid #e1e9e7;position:-webkit-sticky;position:sticky;top:0;z-index:4;box-shadow:0 2px 8px rgba(20,50,48,.06)}
+.esi-brand{position:relative;width:clamp(72px,8vw,100px);flex:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:10px 4px 8px;border-right:1px solid #e1e9e7}
+.esi-brand-mark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#0284c7;font-size:clamp(36px,5vw,58px);font-weight:900;line-height:.9;letter-spacing:-.06em}
+.esi-brand-name{color:#0284c7;font-size:8px;font-weight:700;line-height:1.15;text-align:center}
+.esi-head-content{flex:1;min-width:0;padding:14px 18px 12px 8px}
+.esi-title{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;margin-bottom:12px}
+.esi-title h1{grid-column:2;margin:0;text-align:center;font-size:16px;font-weight:700}
 .esi-title small{font-size:11px;color:#6b7d7b}
+.esi-title small{grid-column:3;justify-self:end}
 .esi-steps{display:flex}
 .esi-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
 .esi-step::before{content:"";position:absolute;top:11px;right:50%;width:100%;height:2px;background:#dfe7e5}
@@ -91,9 +96,17 @@ const css = `
 .f{margin-bottom:12px}
 .f:last-child{margin-bottom:0}
 .f label,.lbl{display:block;font-size:11.5px;font-weight:600;color:#43605d;margin-bottom:5px}
+.telugu-label{font-size:9px}
+.esi-card h2 .telugu-label{font-size:10px}
 .f input[type=text],.f input[type=tel],.f input[type=date],.f input[type=number],.f select,.f textarea{
   width:100%;font:inherit;font-size:13.5px;padding:0 12px;height:40px;border:1px solid var(--line);border-radius:10px;background:#f8fbfa;color:var(--ink);outline:none;transition:border .15s,box-shadow .15s,background .15s;appearance:none;-webkit-appearance:none}
 .f input::placeholder{color:#a3b2b0}
+.form-notice-overlay{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(13,31,29,.28)}
+.form-notice{position:relative;overflow:hidden;width:fit-content;max-width:calc(100vw - 40px);padding:18px 20px 24px;border:1px solid #f1b6b0;border-radius:14px;background:#fff8f7;color:#9f2d22;box-shadow:0 12px 40px rgba(0,0,0,.2);font-size:14px;font-weight:600;line-height:1.6;white-space:pre-line}
+.form-submit-error{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.form-submit-error button{padding:8px 18px;border:0;border-radius:8px;background:#9f2d22;color:#fff;font:inherit;cursor:pointer}
+.form-notice::after{position:absolute;right:0;bottom:0;left:0;height:4px;background:#d64b3f;content:"";transform:scaleX(0);transform-origin:left;animation:form-notice-progress 2s linear forwards}
+@keyframes form-notice-progress{to{transform:scaleX(1)}}
 .date-picker-trigger{cursor:pointer}
 .date-picker-overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(13,31,29,.55)}
 .date-picker-dialog{width:min(320px,100%);padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.25)}
@@ -148,6 +161,9 @@ const css = `
 .photo-browse input{position:absolute;width:1px;height:1px;opacity:0}
 .photo-thumb{width:56px;height:56px;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden;cursor:zoom-in}
 .photo-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.esi-spouse-card .photo-upload,.esi-children-card .photo-upload{position:relative;min-height:56px}
+.esi-spouse-card .photo-upload .photo-thumb,.esi-children-card .photo-upload .photo-thumb{position:absolute;top:50%;left:50%;margin:0;transform:translate(-50%,-50%)}
+.esi-spouse-card .photo-filename,.esi-children-card .photo-filename{display:none}
 .review-photo-thumb{width:36px;height:36px;flex:none}
 .photo-filename{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
 .photo-browse:focus-within,.photo-thumb:focus-visible,.photo-preview-close:focus-visible{outline:2px solid rgba(15,118,110,.5);outline-offset:2px}
@@ -161,7 +177,11 @@ const css = `
 .child h3{margin:0 0 10px;font-size:12px;font-weight:700;color:var(--brand-d)}
 .child-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
 .child-nav span{font-size:12px;font-weight:600;color:var(--muted)}
-.child-nav .btn{flex:0 0 auto;min-width:110px}
+.child-nav .btn{flex:0 0 auto;min-width:0;height:32px;padding:0 12px;font-size:12px;border-radius:8px}
+.btn.child-nav-ok{background:#1d4ed8;color:#fff;box-shadow:0 2px 8px rgba(29,78,216,.25)}
+.btn.child-nav-err{background:#1d4ed8;color:#fff;cursor:not-allowed;opacity:.6;box-shadow:0 2px 8px rgba(29,78,216,.15)}
+.btn.child-nav-err:active{transform:none}
+.child-nav-err-ic{font-size:13px;line-height:1;vertical-align:middle}
 .review-family-person,.review-children-title,.review-children-table-wrap{grid-column:1/-1}
 .review-parent-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:12px}
 .review-parent-row .sum-photo{justify-content:flex-start;gap:8px}
@@ -220,7 +240,7 @@ const css = `
 }
 @media (min-width:1024px){
   .esi-wrap{max-width:1200px}
-  .esi-head{padding:20px 28px 16px}
+  .esi-head-content{padding:20px 28px 16px 12px}
   .esi-title h1{font-size:20px}
   .esi-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:16px;padding:24px 28px 110px}
   .esi-body.esi-body-wide{grid-template-columns:minmax(0,1fr)}
@@ -609,6 +629,14 @@ export default function EmployeeESIForm() {
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [duplicateError, setDuplicateError] = useState("");
+  const [familyNotice, setFamilyNotice] = useState("");
+
+  useEffect(() => {
+    if (!familyNotice) return undefined;
+    const timeout = window.setTimeout(() => setFamilyNotice(""), 1000);
+    return () => window.clearTimeout(timeout);
+  }, [familyNotice]);
 
   const set = (k, v) => {
     setD((p) => ({ ...p, [k]: v }));
@@ -668,12 +696,31 @@ export default function EmployeeESIForm() {
     return Object.keys(e).length === 0;
   };
 
-  const next = () => { if (validate()) { setStep((s) => s + 1); window.scrollTo?.({ top: 0 }); } };
+  const next = () => {
+    if (!validate()) {
+      if (step === 1) {
+        const unenteredDetails = [];
+        if (showChildren) {
+          for (let i = 0; i < count; i++) {
+            const child = d.children[i];
+            if (!child.name.trim() && !child.dob && !child.photo) {
+              unenteredDetails.push(`Child ${i + 1} details not entered`);
+            }
+          }
+        }
+        if (unenteredDetails.length) setFamilyNotice(unenteredDetails.join("\n"));
+      }
+      return;
+    }
+    setStep((s) => s + 1);
+    window.scrollTo?.({ top: 0 });
+  };
   const back = () => { setStep((s) => s - 1); window.scrollTo?.({ top: 0 }); };
   const submit = async () => {
     if (!agree || submitting) return;
     setSubmitting(true);
     setSubmitError("");
+    setDuplicateError("");
 
     try {
       const photoEntries = [
@@ -736,13 +783,18 @@ export default function EmployeeESIForm() {
       if (!response.ok) throw new Error(result.error || "Unable to save the ESI form. Please try again.");
       setDone(true);
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : "Unable to save the ESI form. Please try again.");
+      const message = error instanceof Error ? error.message : "Unable to save the ESI form. Please try again.";
+      if (message.startsWith("Already registered with this ")) {
+        setDuplicateError(message);
+      } else {
+        setSubmitError(message);
+      }
     } finally {
       setSubmitting(false);
     }
   };
   const reset = () => {
-    setD(initial); setStep(0); setAgree(false); setDone(false); setErrors({}); setSubmitError("");
+    setD(initial); setStep(0); setAgree(false); setDone(false); setErrors({}); setSubmitError(""); setDuplicateError("");
   };
 
   const num = (k, max) => (e) => set(k, e.target.value.replace(/\D/g, "").slice(0, max));
@@ -765,51 +817,65 @@ export default function EmployeeESIForm() {
       <style>{css}</style>
       <div className="esi-wrap">
         <header className="esi-head">
-          <div className="esi-title"><h1>ESI employee details</h1><small>Step {step + 1} of {STEPS.length}</small></div>
-          <div className="esi-steps">
-            {STEPS.map((s, i) => (
-              <div key={s} className={"esi-step" + (i < step ? " done" : i === step ? " on" : "")}>
-                <div className="dot">{i < step ? "✓" : i + 1}</div><span>{s}</span>
-              </div>
-            ))}
+          <div className="esi-brand">
+            <span className="esi-brand-mark">GTI</span>
+            <span className="esi-brand-name">GREENTECH<br />INDUSTRIES</span>
+          </div>
+          <div className="esi-head-content">
+            <div className="esi-title"><h1>ESI employee details</h1><small>Step {step + 1} of {STEPS.length}</small></div>
+            <div className="esi-steps">
+              {STEPS.map((s, i) => (
+                <div key={s} className={"esi-step" + (i < step ? " done" : i === step ? " on" : "")}>
+                  <div className="dot">{i < step ? "✓" : i + 1}</div><span>{s}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </header>
+
+        {familyNotice && (
+          <div className="form-notice-overlay">
+            <div className="form-notice" role="alert" aria-live="assertive">
+              {familyNotice}
+            </div>
+          </div>
+        )}
 
         <main className={"esi-body" + (step === 0 ? " esi-body-personal" : "") + (step === 2 ? " esi-body-wide" : "") + (step === 3 ? " esi-body-review" : "")}>
           {step === 0 && (
             <>
               <section className="esi-card esi-personal-card">
                 <h2>Personal details</h2>
-                <Field label="Employee ID" error={errors.empId}>
+                <Field label={<>Employee ID <span className="telugu-label">(ఉద్యోగి గుర్తింపు సంఖ్య)</span></>} error={errors.empId}>
                   <input type="text" maxLength={6} value={d.empId} onChange={(e) => set("empId", e.target.value)} />
                 </Field>
-                <Field label="Employee name" error={errors.empName}>
+                <Field label={<>Employee Full Name <span className="telugu-label">(పూర్తి పేరు)</span></>} error={errors.empName}>
                   <input type="text" value={d.empName} onChange={(e) => set("empName", e.target.value)} />
                 </Field>
                 <div className="row2">
-                  <Field label="Date of joining" error={errors.doj}>
-                    <DateInput value={d.doj} onChange={(v) => set("doj", v)} />
-                  </Field>
-                  <Field label="Date of birth" error={errors.dob}>
+                  <Field label={<>Date of birth <span className="telugu-label">(పుట్టిన తేదీ)</span></>} error={errors.dob}>
                     <DateInput value={d.dob} onChange={(v) => set("dob", v)} />
                   </Field>
+                  <Field label={<>Date of joining <span className="telugu-label">(చేరిన తేదీ)</span></>} error={errors.doj}>
+                    <DateInput value={d.doj} onChange={(v) => set("doj", v)} />
+                  </Field>
                 </div>
-                <Field label="Gender" error={errors.gender}>
+                <Field label={<>Gender <span className="telugu-label">(లింగం)</span></>} error={errors.gender}>
                   <Chips seg name="gender" options={GENDERS} value={d.gender} onChange={(v) => set("gender", v)} />
                 </Field>
-                <Field label="Mobile number" error={errors.mobile}>
+                <Field label={<>Mobile number <span className="telugu-label">(మొబైల్ నంబర్)</span></>} error={errors.mobile}>
                   <input type="tel" inputMode="numeric" placeholder="10-digit number" value={d.mobile} onChange={num("mobile", 10)} />
                 </Field>
-                <Field label="Aadhar number" error={errors.aadhar}>
+                <Field label={<>Aadhar number <span className="telugu-label">(ఆధార్ సంఖ్య)</span></>} error={errors.aadhar}>
                   <input type="tel" inputMode="numeric" maxLength={12} placeholder="12-digit number" value={d.aadhar} onChange={num("aadhar", 12)} />
                 </Field>
-                <Field label="Marital status" error={errors.marital}>
+                <Field label={<>Marital status <span className="telugu-label">(వైవాహిక స్థితి)</span></>} error={errors.marital}>
                   <Chips name="marital" options={MARITAL} value={d.marital} onChange={(v) => set("marital", v)} nowrap />
                 </Field>
               </section>
 
               <section className="esi-card esi-previous-card">
-                <h2>Previous ESI</h2>
+                <h2>Previous ESI Details <span className="telugu-label">(ESI వివరాలు)</span></h2>
                 <Field label="Do you have a previous ESI number?" error={errors.prevEsi}>
                   <Chips
                     seg
@@ -841,7 +907,7 @@ export default function EmployeeESIForm() {
               </section>
 
               <section className="esi-card esi-address-card">
-                <h2>Address</h2>
+                <h2>Address <span className="telugu-label">(చిరునామా)</span></h2>
                 <Field label="State" error={errors.state}>
                   <select value={d.state} onChange={(e) => set("state", e.target.value)}>
                     <option value="">Select state</option>
@@ -863,10 +929,10 @@ export default function EmployeeESIForm() {
             <>
               <section className="esi-card esi-family-card">
                 <h2>Family details</h2>
-                <Field label="Father name(తండ్రి పేరు)" error={errors.fatherName}>
+                <Field label={<>Father name <span className="telugu-label">(తండ్రి పేరు)</span></>} error={errors.fatherName}>
                   <input type="text" value={d.fatherName} onChange={(e) => set("fatherName", e.target.value)} />
                 </Field>
-                <Field label="Mother name(తల్లి పేరు)" error={errors.motherName}>
+                <Field label={<>Mother name <span className="telugu-label">(తల్లి పేరు)</span></>} error={errors.motherName}>
                   <input type="text" value={d.motherName} onChange={(e) => set("motherName", e.target.value)} />
                 </Field>
               </section>
@@ -874,10 +940,10 @@ export default function EmployeeESIForm() {
               {married && (
                 <section className="esi-card esi-spouse-card">
                   <h2>Spouse</h2>
-                  <Field label="Spouse name(భర్త / భార్య పేరు)" error={errors.spouseName}>
+                  <Field label={<>Spouse name <span className="telugu-label">(భర్త / భార్య పేరు)</span></>} error={errors.spouseName}>
                     <input type="text" value={d.spouseName} onChange={(e) => set("spouseName", e.target.value)} />
                   </Field>
-                  <Field label="Spouse date of birth" error={errors.spouseDob}>
+                  <Field label={<>Spouse date of birth <span className="telugu-label">(భర్త / భార్య పుట్టిన తేదీ)</span></>} error={errors.spouseDob}>
                     <DateInput value={d.spouseDob} onChange={(v) => set("spouseDob", v)} />
                   </Field>
                   <Photo label="Spouse photograph" file={d.spousePhoto} onChange={(f) => set("spousePhoto", f)} error={errors.spousePhoto} zoomable browsePreview />
@@ -901,12 +967,30 @@ export default function EmployeeESIForm() {
                   </Field>
                   {count > 1 && (
                     <div className="child-nav">
-                      <button type="button" className="btn sec" disabled={childIndex === 0} onClick={() => setChildIndex((current) => current - 1)}>
-                        Previous child
+                      <button
+                        type="button"
+                        className={"btn" + (childIndex === 0 ? " child-nav-err" : " child-nav-ok")}
+                        disabled={childIndex === 0}
+                        onClick={() => setChildIndex((current) => current - 1)}
+                      >
+                        {childIndex === 0 ? (
+                          <><span className="child-nav-err-ic" aria-hidden="true"></span> Previous child</>
+                        ) : (
+                          "Previous child"
+                        )}
                       </button>
                       <span aria-live="polite">Child {childIndex + 1} of {count}</span>
-                      <button type="button" className="btn sec" disabled={childIndex === count - 1} onClick={() => setChildIndex((current) => current + 1)}>
-                        Next child
+                      <button
+                        type="button"
+                        className={"btn" + (childIndex === count - 1 ? " child-nav-err" : " child-nav-ok")}
+                        disabled={childIndex === count - 1}
+                        onClick={() => setChildIndex((current) => current + 1)}
+                      >
+                        {childIndex === count - 1 ? (
+                          <>Next child <span className="child-nav-err-ic" aria-hidden="true"></span></>
+                        ) : (
+                          "Next child"
+                        )}
                       </button>
                     </div>
                   )}
@@ -1046,10 +1130,20 @@ export default function EmployeeESIForm() {
                   <span><b>Declaration:</b> I hereby confirm that the information provided is true to the best of my knowledge.</span>
                 </label>
               </section>
-              {submitError && <p role="alert" className="err">{submitError}</p>}
             </>
           )}
         </main>
+
+        {duplicateError && (
+          <div className="form-notice-overlay" role="presentation" onClick={() => setDuplicateError("")}>
+            <div className="form-notice form-submit-error" role="alertdialog" aria-modal="true" aria-live="assertive" onClick={(event) => event.stopPropagation()}>
+              <span>{duplicateError}</span>
+              <button type="button" onClick={() => setDuplicateError("")}>OK</button>
+            </div>
+          </div>
+        )}
+
+        {submitError && <p role="alert" className="err">{submitError}</p>}
 
         <div className="bar">
           <div className="bar-in">
@@ -1058,7 +1152,7 @@ export default function EmployeeESIForm() {
               <button className="btn pri" onClick={next}>Next</button>
             ) : (
               <button className="btn pri" onClick={submit} disabled={!agree || submitting}>
-                {submitting ? "Compressing and saving..." : "Submit"}
+                {submitting ? "Saving Details..." : "Submit"}
               </button>
             )}
           </div>

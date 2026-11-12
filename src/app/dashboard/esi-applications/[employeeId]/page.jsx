@@ -2,17 +2,12 @@ import '../../page.css';
 import { cookies } from 'next/headers';
 import * as jose from 'jose';
 import DashboardNavbar from '../../DashboardNavbar';
-import { getEmployeeName } from '../../employee';
+import DashboardFooter from '../../DashboardFooter';
+import { getEmployeeName, getUserPermissions } from '../../employee';
 import EsiApplicationDetails from './details';
 
-export default async function EsiApplicationDetailsPage({ params, searchParams }) {
+export default async function EsiApplicationDetailsPage({ params }) {
   const { employeeId } = await params;
-  const { from } = await searchParams;
-  const backTo = from === 'manage'
-    ? '/dashboard/manage-applications'
-    : from === 'verified'
-      ? '/dashboard/esi-applications/verified'
-      : '/dashboard/esi-applications';
   const cookieStore = await cookies();
   const token = cookieStore.get('auth_token')?.value;
   let username = 'Member';
@@ -27,13 +22,16 @@ export default async function EsiApplicationDetailsPage({ params, searchParams }
     }
   }
   const empName = token ? await getEmployeeName(username) : username;
+  const permissions = token ? await getUserPermissions(username) : { esiApplMnge: 'N' };
+  const canManage = permissions.esiApplMnge === 'Y';
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', color: '#333333', overflow: 'hidden' }}>
-      <DashboardNavbar empName={empName} activePage="esi" />
-      <div style={{ flex: 1, minHeight: 0 }}>
-        <EsiApplicationDetails employeeId={employeeId} backTo={backTo} />
+    <div className="esiApplicationDetailsShell">
+      <DashboardNavbar empName={empName} activePage="esi" canManage={canManage} />
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <EsiApplicationDetails employeeId={employeeId} />
       </div>
+      <DashboardFooter />
     </div>
   );
 }

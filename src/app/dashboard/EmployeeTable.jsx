@@ -179,36 +179,38 @@ export default function EmployeeTable() {
   ];
 
   const years = Array.from({ length: 11 }, (_, i) => 2020 + i);
+  const workerLabel = workerType === 'STUDENT'
+    ? 'Student'
+    : workerType === 'STAFF' ? 'Staff' : 'Operators';
+  const statusLabel = active === 'Y' ? 'Active' : 'Resigned';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}>
 
-      {/* Description & Count Row (Top) */}
-      <div className="no-print" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '15px', padding: '5px 0', width: '100%', marginBottom: '5px' }}>
-        <p style={{ margin: 0, fontSize: '13px', color: '#666666' }}>
-          List of employees from the EMPMAST database table based on status filter.
-        </p>
-        <div style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>
-          <strong>{active === 'Y' ? 'Active' : 'Resigned'}:</strong> {employees.length} | <strong>Showing:</strong> {filteredEmployees.length} | <strong>Selected:</strong> {selectedRows.size}
-        </div>
-      </div>
-
-      {/* Filter Bar (Bottom) */}
-      <div className="no-print" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '15px', padding: '10px 0', borderBottom: '1px solid #eee', marginBottom: '15px', width: '100%', overflowX: 'auto' }}>
-        <div style={{ flex: '0 0 auto', whiteSpace: 'nowrap', fontSize: '18px', fontWeight: '700' }}>
-          {active === 'Y'
-            ? (workerType === 'STAFF' ? 'Active Staff' : 'Active Operators')
-            : (workerType === 'STAFF' ? 'Resigned Staff' : 'Resigned Operators')}
+      <div className="no-print resignEmployeesToolbar">
+        <div className="resignEmployeesTitle">
+          {workerType ? `${statusLabel} ${workerLabel}` : 'Employees'}
         </div>
 
-        <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: '15px', whiteSpace: 'nowrap' }}>
-           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <label htmlFor="worker-type-select" style={{ marginRight: '5px' }}>Type:</label>
+        <div className="resignEmployeesSummary">
+          <div className="resignEmployeesMetric">
+            <span>{statusLabel}</span><strong>{employees.length}</strong>
+          </div>
+          <div className="resignEmployeesMetric">
+            <span>Showing</span><strong>{filteredEmployees.length}</strong>
+          </div>
+          <div className="resignEmployeesMetric">
+            <span>Selected</span><strong>{selectedRows.size}</strong>
+          </div>
+        </div>
+
+        <div className="resignEmployeesFilters">
+          <div className="resignEmployeesFilter">
+            <label htmlFor="worker-type-select">Type:</label>
             <select
               id="worker-type-select"
               value={workerType}
               onChange={(e) => setWorkerType(e.target.value)}
-              style={{ padding: '4px', border: '1px solid #ccc' }}
             >
               <option value="">Select Type</option>
               <option value="REG">Reg Worker</option>
@@ -218,13 +220,12 @@ export default function EmployeeTable() {
             </select>
           </div>
 
-           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <label htmlFor="active-select" style={{ marginRight: '5px' }}>Active:</label>
+          <div className="resignEmployeesFilter">
+            <label htmlFor="active-select">Active:</label>
             <select
               id="active-select"
               value={active}
               onChange={(e) => setActive(e.target.value)}
-              style={{ padding: '4px', border: '1px solid #ccc' }}
             >
               <option value="Y">Y</option>
               <option value="N">N</option>
@@ -232,8 +233,8 @@ export default function EmployeeTable() {
           </div>
 
           {active !== 'Y' && (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <label htmlFor="year-input" style={{ marginRight: '5px' }}>Year:</label>
+            <div className="resignEmployeesFilter">
+              <label htmlFor="year-input">Year:</label>
               <input
                 id="year-input"
                 type="number"
@@ -242,19 +243,17 @@ export default function EmployeeTable() {
                   const val = parseInt(e.target.value, 10);
                   setYear(isNaN(val) ? '' : val);
                 }}
-                style={{ padding: '4px', border: '1px solid #ccc', width: '65px' }}
               />
             </div>
           )}
 
           {active !== 'Y' && (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <label htmlFor="month-select" style={{ marginRight: '5px' }}>Month:</label>
+            <div className="resignEmployeesFilter">
+              <label htmlFor="month-select">Month:</label>
               <select
                 id="month-select"
                 value={month}
                 onChange={(e) => setMonth(parseInt(e.target.value, 10))}
-                style={{ padding: '4px', border: '1px solid #ccc' }}
               >
                 {months.map((m) => (
                   <option key={m.value} value={m.value}>{m.label}</option>
@@ -263,99 +262,91 @@ export default function EmployeeTable() {
             </div>
           )}
 
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <label htmlFor="search-input" style={{ marginRight: '5px' }}>Search:</label>
+          <div className="resignEmployeesFilter">
+            <label htmlFor="search-input">Search:</label>
             <input
               id="search-input"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Emp Code"
-              style={{ padding: '4px 8px', border: '1px solid #ccc', width: '140px' }}
             />
           </div>
         </div>
       </div>
 
       {/* Normal Table */}
-      <div className="no-print" style={{ flex: 1, overflow: 'auto', border: '1px solid #cccccc', marginBottom: '15px' }}>
+      <div className="no-print resignEmployeesTableWrap">
         {!workerType ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#666666' }}>
+          <div className="resignEmployeesTableMessage">
             Please select a worker type to load employee records
           </div>
         ) : loading ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>Loading...</div>
+          <div className="resignEmployeesTableMessage">Loading...</div>
         ) : error ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: 'red' }}>
+          <div className="resignEmployeesTableMessage isError">
             <div>Error: {error}</div>
-            <button onClick={() => fetchEmployees(year, month, active, workerType)} style={{ marginTop: '10px', padding: '5px 10px' }}>
+            <button type="button" onClick={() => fetchEmployees(year, month, active, workerType)}>
               Retry
             </button>
           </div>
         ) : filteredEmployees.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>No records found</div>
+          <div className="resignEmployeesTableMessage">No records found</div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px', fontSize: '12px' }}>
+          <table className="resignEmployeesTable">
             <thead>
-              <tr style={{ borderBottom: '1px solid #cccccc' }}>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, width: '40px', padding: '8px', border: '1px solid #cccccc', textAlign: 'center' }}>
+              <tr>
+                <th className="isCheckboxColumn">
                   <input
                     type="checkbox"
                     checked={allFilteredSelected}
                     onChange={toggleSelectAll}
-                    style={{ cursor: 'pointer' }}
                   />
                 </th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, padding: '8px', border: '1px solid #cccccc', textAlign: 'left' }}>Emp Code</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, padding: '8px', border: '1px solid #cccccc', textAlign: 'left' }}>Name</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, padding: '8px', border: '1px solid #cccccc', textAlign: 'left' }}>Designation</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, padding: '8px', border: '1px solid #cccccc', textAlign: 'left' }}>Department</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, padding: '8px', border: '1px solid #cccccc', textAlign: 'left' }}>Section</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, padding: '8px', border: '1px solid #cccccc', textAlign: 'left' }}>Join Date</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, padding: '8px', border: '1px solid #cccccc', textAlign: 'left' }}>DOL</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, padding: '8px', border: '1px solid #cccccc', textAlign: 'left' }}>Last Work Day</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, padding: '8px', border: '1px solid #cccccc', textAlign: 'left' }}>Reason</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: '#f2f2f2', zIndex: 1, width: workerType === 'STAFF' ? '180px' : '100px', padding: '8px', border: '1px solid #cccccc', textAlign: 'center' }}>Action</th>
+                <th>Emp Code</th>
+                <th>Name</th>
+                <th>Designation</th>
+                <th>Department</th>
+                <th>Section</th>
+                <th>Join Date</th>
+                <th>DOL</th>
+                <th>Last Work Day</th>
+                <th>Reason</th>
+                <th className={`isActionColumn${workerType === 'STAFF' ? ' isStaff' : ''}`}>Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredEmployees.map((emp) => (
                 <tr
                   key={emp.EMPCODE}
-                  style={{
-                    borderBottom: '1px solid #cccccc',
-                    backgroundColor: selectedRows.has(emp.EMPCODE) ? '#e6f7ff' : '#ffffff'
-                  }}
+                  className={selectedRows.has(emp.EMPCODE) ? 'isSelected' : ''}
                 >
-                  <td style={{ padding: '8px', border: '1px solid #cccccc', textAlign: 'center' }}>
+                  <td className="isCheckboxColumn">
                     <input
                       type="checkbox"
                       checked={selectedRows.has(emp.EMPCODE)}
                       onChange={() => toggleSelectRow(emp.EMPCODE)}
-                      style={{ cursor: 'pointer' }}
                     />
                   </td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc' }}>{emp.EMPCODE}</td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc', fontWeight: 'bold' }}>{emp.EMPNAME}</td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc' }}>{emp.DESIGNAME || emp.DESIG}</td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc' }}>{emp.DEPTNAME || emp.DEPTCODE}</td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc' }}>{emp.NSECTION || emp.NSECCODE}</td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc' }}>{emp.JOINDATE || '-'}</td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc', color: '#cc0000', fontWeight: 'bold' }}>{emp.DOL || '-'}</td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc' }}>{emp.LASTWRKDAY || '-'}</td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc' }}>{emp.REASON || '-'}</td>
-                  <td style={{ padding: '8px', border: '1px solid #cccccc', textAlign: 'center' }}>
+                  <td className="isEmployeeCode">{emp.EMPCODE}</td>
+                  <td className="isEmployeeName">{emp.EMPNAME}</td>
+                  <td>{emp.DESIGNAME || emp.DESIG}</td>
+                  <td>{emp.DEPTNAME || emp.DEPTCODE}</td>
+                  <td>{emp.NSECTION || emp.NSECCODE}</td>
+                  <td>{emp.JOINDATE || '-'}</td>
+                  <td className="isLeavingDate">{emp.DOL || '-'}</td>
+                  <td>{emp.LASTWRKDAY || '-'}</td>
+                  <td>{emp.REASON || '-'}</td>
+                  <td className="isActionColumn">
                     {workerType === 'STAFF' ? (
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '4px' }}>
+                      <div className="resignEmployeesActionButtons">
                         <button
                           onClick={() => openForm(emp, 'due')}
-                          style={{ padding: '2px 6px', fontSize: '11px', cursor: 'pointer' }}
                         >
                           No Dues Form
                         </button>
                         <button
                           onClick={() => openForm(emp, 'resign')}
-                          style={{ padding: '2px 6px', fontSize: '11px', cursor: 'pointer' }}
                         >
                           Resign Form
                         </button>
@@ -363,7 +354,6 @@ export default function EmployeeTable() {
                     ) : (
                       <button
                         onClick={() => openForm(emp)}
-                        style={{ padding: '2px 6px', fontSize: '11px', cursor: 'pointer' }}
                       >
                         View Form
                       </button>
@@ -374,29 +364,6 @@ export default function EmployeeTable() {
             </tbody>
           </table>
         )}
-      </div>
-
-      {/* Download Selected Forms button — below the table */}
-      <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px', paddingBottom: '20px' }}>
-        {pdfError && <span style={{ color: '#cc0000', fontSize: '12px' }}>{pdfError}</span>}
-        <button
-          onClick={handleDownloadSelected}
-          disabled={selectedRows.size === 0 || generatingPdf}
-          style={{
-            padding: '8px 16px',
-            fontSize: '13px',
-            fontWeight: 600,
-            color: '#ffffff',
-            backgroundColor: selectedRows.size === 0 || generatingPdf ? '#93c5fd' : '#2563eb',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: selectedRows.size === 0 || generatingPdf ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {generatingPdf
-            ? 'Generating PDF…'
-            : `Download Selected Forms${selectedRows.size ? ` (${selectedRows.size})` : ''}`}
-        </button>
       </div>
 
       {/* Off-screen printable clones for every selected employee — kept in

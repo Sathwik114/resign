@@ -2,7 +2,8 @@ import '../page.css';
 import { cookies } from 'next/headers';
 import * as jose from 'jose';
 import DashboardNavbar from '../DashboardNavbar';
-import { getEmployeeName } from '../employee';
+import DashboardFooter from '../DashboardFooter';
+import { getEmployeeName, getUserPermissions } from '../employee';
 import EsiApplicationsTable from './table';
 
 export default async function EsiApplicationsPage() {
@@ -20,13 +21,16 @@ export default async function EsiApplicationsPage() {
     }
   }
   const empName = token ? await getEmployeeName(username) : username;
+  const permissions = token ? await getUserPermissions(username) : { esiApplMnge: 'N' };
+  const canManage = permissions.esiApplMnge === 'Y';
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', color: '#333333', overflow: 'hidden' }}>
-      <DashboardNavbar empName={empName} activePage="esi" />
-      <div style={{ flex: 1, minHeight: 0 }}>
-        <EsiApplicationsTable />
+    <div style={{ fontFamily: 'Arial, sans-serif', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F0F7F8', color: '#183B4E', overflow: 'hidden' }}>
+      <DashboardNavbar empName={empName} activePage="esi" canManage={canManage} />
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <EsiApplicationsTable canManage={canManage} />
       </div>
+      <DashboardFooter />
     </div>
   );
 }

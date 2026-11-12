@@ -118,21 +118,22 @@
 .nav-btn-active {
   padding: 8px 16px;
   font-size: 13px;
-  font-weight: 600;
-  color: #ffffff !important;
-  background-color: #0284c7;
-  border: none;
+  font-weight: 700;
+  color: #115E59 !important;
+  background-color: #CCFBF1;
+  border: 1px solid #99F6E4;
   border-radius: 8px;
   text-decoration: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
+  transition: all 0.2s ease;
 }
 
 .nav-btn-active:hover {
-  background-color: #0369a1;
+  background-color: #B2F5EA;
+  color: #115E59 !important;
   text-decoration: none;
 }
 
@@ -140,21 +141,62 @@
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 600;
-  color: #475569 !important;
-  background-color: #f1f5f9;
-  border: 1px solid #cbd5e1;
+  color: #ffffff !important;
+  background-color: #0D9488;
+  border: 1px solid #0D9488;
   border-radius: 8px;
   text-decoration: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(13, 148, 136, 0.2);
+  transition: all 0.2s ease;
 }
 
 .nav-btn-inactive:hover {
-  background-color: #e2e8f0;
-  color: #1e293b !important;
+  background-color: #0F766E;
+  border-color: #0F766E;
+  color: #ffffff !important;
   text-decoration: none;
+}
+
+.esiFormSettingsIcon {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1px solid #0d9488;
+  border-radius: 8px;
+  background: #0d9488;
+  color: #ffffff;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(13, 148, 136, 0.2);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.esiFormSettingsIcon.isInactive:hover {
+  background: #0f766e;
+  border-color: #0f766e;
+}
+
+.esiFormSettingsIcon.isActive {
+  border-color: #99f6e4;
+  background: #ccfbf1;
+  color: #115e59;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
+}
+
+.esiFormSettingsIcon.isActive:hover {
+  background: #b2f5ea;
+  color: #115e59;
+}
+
+.esiFormSettingsIcon svg {
+  width: 21px;
+  height: 21px;
 }
 
 .dashboardNavbarBrand {
@@ -176,10 +218,15 @@
   align-items: center;
   gap: 5px;
   padding: 8px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.16);
   cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dashboardMenuButton:hover {
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .dashboardMenuButton span {
@@ -187,7 +234,7 @@
   width: 20px;
   height: 2px;
   border-radius: 2px;
-  background: #334155;
+  background: #ffffff;
 }
 
 .dashboardMenuPanel {
@@ -216,31 +263,75 @@
   background: #f1f5f9;
 }
 
+.esiApplicationDetailsShell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #F0F7F8;
+  color: #183B4E;
+  font-family: Arial, sans-serif;
+}
+
 .esiApplicationsPage {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   width: 100%;
   height: 100%;
   min-height: 0;
-  padding: 20px;
+  padding: 18px 22px;
   overflow: hidden;
-  background: #ffffff;
-  color: #1e293b;
+  background: linear-gradient(180deg, #e6f1f4 0%, #f0f7f8 52%, #e3eef1 100%);
+  color: #183b4e;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
 }
 
-.esiApplicationsHeader,
+.esiApplicationsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: none;
+  flex-wrap: wrap;
+  min-height: 44px;
+  padding: 3px 10px;
+  border: 1px solid #d7e3e8;
+  border-left: 4px solid #0d9488;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #ffffff 0%, #f7fbfc 100%);
+  box-shadow: 0 4px 14px rgba(16, 42, 67, 0.08);
+}
+
+.esiApplicationsTitleWrap {
+  flex: 0 0 auto;
+}
+
+.esiApplicationsTitleWrap h1 {
+  margin: 0;
+  color: #102a43;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+.esiApplicationsTitleWrap p {
+  margin: 4px 0 0;
+  color: #526b79;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 .esiApplicationsPagination {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex: none;
-}
-
-.esiApplicationsHeader h1 {
-  margin: 0;
-  font-size: 22px;
 }
 
 .esiApplicationsStatusCard {
@@ -262,42 +353,193 @@
   color: #b45309;
 }
 
-.esiApplicationsHeader p {
-  margin: 5px 0 0;
-  color: #64748b;
+.esiApplicationsRightControls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-left: auto;
+  flex: 1 1 auto;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 1px;
+  scrollbar-width: thin;
+}
+
+.esiApplicationsToolbarControl {
+  width: 150px;
+  min-width: 150px;
+  height: 32px;
+  flex: 0 0 150px;
+  box-sizing: border-box;
+  border: 1px solid #9bcfc8;
+  border-radius: 8px;
+  background: #f3fbf9;
+  color: #183b4e;
+  font: inherit;
   font-size: 13px;
+  box-shadow: 0 1px 3px rgba(13, 118, 110, 0.12);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .esiApplicationsSearch {
-  flex: 0 1 420px;
-  min-width: 220px;
-  padding: 9px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 7px;
-  background: #ffffff;
-  color: #1e293b;
-  font: inherit;
+  width: 190px;
+  min-width: 180px;
+  flex: 0 1 190px;
+  padding: 0 12px;
 }
 
 .esiApplicationsSearch:focus-visible {
-  outline: 2px solid #0f766e;
-  outline-offset: 2px;
+  outline: none;
+  border-color: #5eead4;
+  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.23);
 }
 
-.esiApplicationsExportButton {
-  flex: none;
-  padding: 9px 12px;
-  border: 1px solid #0f766e;
-  border-radius: 7px;
-  background: #0f766e;
-  color: #ffffff;
-  font: inherit;
-  font-weight: 600;
+.esiApplicationsFilterSelect,
+.esiApplicationsDateInput,
+.esiApplicationsYearInput {
+  padding: 0 10px;
+}
+
+.esiApplicationsFilterSelect:focus-visible,
+.esiApplicationsDateInput:focus-visible,
+.esiApplicationsYearInput:focus-visible {
+  outline: none;
+  border-color: #5eead4;
+  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.23);
+}
+
+.esiApplicationsYearInput {
+  width: 86px;
+  min-width: 86px;
+  flex: 0 0 86px;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.esiApplicationsYearInput::-webkit-inner-spin-button,
+.esiApplicationsYearInput::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.esiApplicationsWeekPicker {
+  position: relative;
+  flex: 0 0 190px;
+  width: 190px;
+}
+
+.esiApplicationsToolbarControl.esiApplicationsWeekTrigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 190px;
+  min-width: 190px;
+  flex-basis: 190px;
+  padding: 0 10px;
   cursor: pointer;
 }
 
+.esiApplicationsWeekTrigger strong {
+  flex: none;
+  font-size: 12px;
+}
+
+.esiApplicationsWeekTrigger > span:nth-of-type(1) {
+  overflow: hidden;
+  color: #526b79;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.esiApplicationsWeekChevron {
+  margin-left: auto;
+  color: #526b79;
+}
+
+.esiApplicationsWeekMenu {
+  position: fixed;
+  z-index: 1000;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid #9bcfc8;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(16, 42, 67, 0.2);
+}
+
+.esiApplicationsWeekMenuHeader,
+.esiApplicationsWeekOption {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+}
+
+.esiApplicationsWeekMenuHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid #d6e3e8;
+  background: #f1f8fb;
+  color: #526b79;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.esiApplicationsWeekOption {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #edf2f2;
+  background: #ffffff;
+  color: #183b4e;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.esiApplicationsWeekOption:last-child {
+  border-bottom: 0;
+}
+
+.esiApplicationsWeekOption:hover,
+.esiApplicationsWeekOption:focus-visible {
+  outline: none;
+  background: #f0faf8;
+}
+
+.esiApplicationsWeekOption.isSelected {
+  background: #e3f5f1;
+  color: #0f766e;
+  font-weight: 700;
+}
+
+.esiApplicationsExportButton {
+  padding: 0 14px;
+  border: 1px solid #0d9488;
+  background: #0d9488;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
 .esiApplicationsExportButton:hover:not(:disabled) {
-  background: #0b5a54;
+  background: #0f766e;
+  border-color: #0f766e;
+  transform: translateY(-1px);
 }
 
 .esiApplicationsExportButton:disabled {
@@ -307,30 +549,41 @@
 
 .verifiedApplicationsFilters {
   display: flex;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 12px;
-  flex: none;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
 }
 
-.verifiedApplicationsFilters label {
-  display: grid;
-  gap: 5px;
-  color: #475569;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.verifiedApplicationsFilters select,
-.verifiedApplicationsFilters input {
-  min-width: 160px;
-  min-height: 36px;
-  padding: 6px 9px;
+.verifiedApplicationsFilterSelect,
+.verifiedApplicationsDateInput {
+  height: 38px;
+  min-width: 140px;
+  padding: 0 10px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 7px;
   background: #ffffff;
   color: #1e293b;
   font: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.verifiedApplicationsFilterSelect:focus-visible,
+.verifiedApplicationsDateInput:focus-visible {
+  outline: 2px solid #0D9488;
+  outline-offset: 1px;
+}
+
+.verifiedApplicationsRangeWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.verifiedApplicationsRangeSep {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 13px;
 }
 
 .esiApplicationsBack {
@@ -345,6 +598,10 @@
   gap: 12px;
   flex: none;
   font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.06);
 }
 
 .esiApplicationsError {
@@ -353,12 +610,28 @@
 
 .esiApplicationsMessage button,
 .esiApplicationsPagination button {
+  min-height: 34px;
   padding: 7px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border: 1px solid #d5e1e8;
+  border-radius: 8px;
   background: #ffffff;
-  color: #334155;
+  color: #183b4e;
+  font: inherit;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.esiApplicationsPagination button:hover:not(:disabled),
+.esiApplicationsMessage button:hover {
+  border-color: #0d9488;
+  background: #ecfdf9;
+  color: #0f766e;
+}
+
+.esiApplicationsPagination button {
+  min-height: 28px;
+  padding: 4px 9px;
 }
 
 .esiApplicationsPagination button:disabled {
@@ -369,9 +642,35 @@
 .esiApplicationsTableWrap {
   flex: 1;
   min-height: 0;
-  overflow: auto;
-  border: 1px solid #cbd5e1;
+  overflow-x: auto;
+  overflow-y: scroll;
+  border: 1px solid #d7e3e8;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(16, 42, 67, 0.08);
   scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #e2e8f0;
+}
+
+.esiApplicationsTableWrap::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.esiApplicationsTableWrap::-webkit-scrollbar-track {
+  border-radius: 4px;
+  background: #e2e8f0;
+}
+
+.esiApplicationsTableWrap::-webkit-scrollbar-thumb {
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background: #94a3b8;
+}
+
+.esiApplicationsTableWrap::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 .esiApplicationsTable {
@@ -380,14 +679,15 @@
   border-collapse: separate;
   border-spacing: 0;
   font-size: 12px;
+  color: #183b4e;
 }
 
 .esiApplicationsTable th,
 .esiApplicationsTable td {
   max-width: 320px;
-  padding: 5px 8px;
-  border-right: 1px solid #e2e8f0;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 7px 10px;
+  border-right: 1px solid #c5d2da;
+  border-bottom: 1px solid #c5d2da;
   text-align: left;
   vertical-align: middle;
   overflow-wrap: anywhere;
@@ -396,8 +696,15 @@
 .esiApplicationsTable th {
   position: sticky;
   top: 0;
-  z-index: 1;
-  background: #f1f5f9;
+  z-index: 2;
+  padding-top: 11px;
+  padding-bottom: 11px;
+  border-color: #496b82;
+  background: #173b56;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
@@ -405,22 +712,45 @@
   white-space: pre-wrap;
 }
 
+.esiApplicationsDataRow td {
+  background: #ffffff;
+}
+
 .esiApplicationsDataRow {
   cursor: pointer;
+  transition: background-color 0.12s ease;
 }
 
-.esiApplicationsDataRow:hover {
-  background: #f8fafc;
+.esiApplicationsDataRow:hover td {
+  background: #edf7f6;
 }
 
-.esiApplicationsVerifyButton {
+.esiApplicationsDataRow.isActive,
+.esiApplicationsDataRow.isSelected,
+.esiApplicationsDataRow.isActive:hover,
+.esiApplicationsDataRow.isSelected:hover {
+  background: #c9eee7;
+}
+
+.esiApplicationsDataRow.isActive td,
+.esiApplicationsDataRow.isSelected td {
+  background: #c9eee7;
+}
+
+.esiApplicationsDataRow.isActive td:first-child,
+.esiApplicationsDataRow.isSelected td:first-child {
+  box-shadow: inset 3px 0 0 #0d9488;
+}
+
+.esiApplicationsPagination .esiApplicationsVerifyButton {
   margin-left: 6px;
   padding: 5px 9px;
   border: 1px solid #0f766e;
   border-radius: 6px;
-  background: #0f766e;
-  color: #ffffff;
+  background: #ffffff;
+  color: #0f766e;
   font: inherit;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -447,10 +777,31 @@
   color: #334155;
 }
 
-.esiApplicationsDeleteButton:disabled,
-.esiApplicationsCancelButton:disabled {
-  cursor: wait;
-  opacity: 0.65;
+.esiApplicationsPagination .esiApplicationsDeleteButton {
+  background: #ffffff;
+  color: #b91c1c;
+  font-weight: 700;
+  transition: all 0.15s ease-in-out;
+}
+
+.esiApplicationsPagination .esiApplicationsDeleteButton:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.esiApplicationsPagination .esiApplicationsDeleteButton:disabled {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.esiApplicationsPagination .esiApplicationsVerifyButton:disabled {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .esiApplicationsVerifyError {
@@ -558,8 +909,8 @@
 
 .esiApplicationsFamilyParents {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
-  align-items: start;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  align-items: stretch;
   gap: 10px;
 }
 
@@ -808,9 +1159,21 @@
 }
 
 .esiApplicationsEmpty {
-  padding: 28px !important;
+  padding: 48px 24px !important;
   text-align: center !important;
-  color: #64748b;
+  color: #526b79;
+  font-size: 14px;
+  font-weight: 600;
+  background: #ffffff;
+}
+
+.esiApplicationsPagination {
+  min-height: 38px;
+  padding: 4px 8px;
+  border: 1px solid #d7e3e8;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.06);
 }
 
 .esiApplicationsPagination > div {
@@ -821,6 +1184,10 @@
 
 .esiApplicationsPaginationActions {
   flex-wrap: wrap;
+}
+
+.esiApplicationsActionsFooter {
+  justify-content: flex-start;
 }
 
 .esiApplicationsTable input[type="checkbox"] {
@@ -888,6 +1255,276 @@
   flex: none;
 }
 
+.resignEmployeesToolbar {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) auto minmax(0, 2fr);
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  border: 1px solid #d7e3e8;
+  border-left: 4px solid #0d9488;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #ffffff 0%, #f7fbfc 100%);
+  box-shadow: 0 4px 14px rgba(16, 42, 67, 0.08);
+}
+
+.resignEmployeesTitle {
+  color: #102a43;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+.resignEmployeesSummary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #526b79;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.resignEmployeesMetric {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 27px;
+  padding: 2px 6px;
+  border: 1px solid #b8dcd7;
+  border-radius: 9px;
+  background: #f0faf8;
+  box-shadow: 0 1px 4px rgba(13, 118, 110, 0.08);
+}
+
+.resignEmployeesMetric span {
+  color: #526b79;
+  font-weight: 600;
+}
+
+.resignEmployeesMetric strong {
+  display: inline-flex;
+  min-width: 21px;
+  height: 19px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border-radius: 7px;
+  background: #e6f4f2;
+  color: #183b4e;
+  font-size: 12px;
+}
+
+.resignEmployeesFilters {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.resignEmployeesFilter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.resignEmployeesFilter label {
+  color: #526b79;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.resignEmployeesFilter select,
+.resignEmployeesFilter input {
+  box-sizing: border-box;
+  height: 27px;
+  padding: 0 6px;
+  border: 1px solid #81bfb6;
+  border-radius: 7px;
+  background: #f0faf8;
+  color: #183b4e;
+  font: inherit;
+  font-size: 12px;
+  box-shadow: 0 1px 4px rgba(13, 118, 110, 0.1);
+}
+
+.resignEmployeesFilter select {
+  min-width: 90px;
+  cursor: pointer;
+}
+
+.resignEmployeesFilter select:focus-visible,
+.resignEmployeesFilter input:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 1px;
+}
+
+.resignEmployeesFilter input[type='number'] {
+  width: 76px;
+}
+
+.resignEmployeesFilter input[type='text'] {
+  width: 140px;
+}
+
+.resignEmployeesTableWrap {
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 15px;
+  overflow: auto;
+  border: 1px solid #d1dfe5;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(16, 42, 67, 0.08);
+}
+
+.resignEmployeesTable {
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #183b4e;
+  font-size: 12px;
+}
+
+.resignEmployeesTable th,
+.resignEmployeesTable td {
+  padding: 5px 9px;
+  border-right: 1px solid #dbe5e9;
+  border-bottom: 1px solid #dbe5e9;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.resignEmployeesTable th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-color: #365a72;
+  background: #173b56;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.resignEmployeesTable th.isCheckboxColumn,
+.resignEmployeesTable td.isCheckboxColumn,
+.resignEmployeesTable th.isActionColumn,
+.resignEmployeesTable td.isActionColumn {
+  text-align: center;
+}
+
+.resignEmployeesTable th.isCheckboxColumn,
+.resignEmployeesTable td.isCheckboxColumn {
+  width: 40px;
+}
+
+.resignEmployeesTable th.isActionColumn,
+.resignEmployeesTable td.isActionColumn {
+  min-width: 110px;
+}
+
+.resignEmployeesTable th.isActionColumn.isStaff {
+  min-width: 190px;
+}
+
+.resignEmployeesTable tbody tr {
+  background: #ffffff;
+  transition: background-color 0.14s ease;
+}
+
+.resignEmployeesTable tbody tr:nth-child(even) {
+  background: #f7fafb;
+}
+
+.resignEmployeesTable tbody tr:hover,
+.resignEmployeesTable tbody tr.isSelected {
+  background: #e2f4f0;
+}
+
+.resignEmployeesTable tbody tr.isSelected td {
+  background: #e2f4f0;
+}
+
+.resignEmployeesTable td.isEmployeeCode {
+  color: #0f766e;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.resignEmployeesTable td.isEmployeeName {
+  color: #102a43;
+  font-weight: 700;
+}
+
+.resignEmployeesTable td.isLeavingDate {
+  color: #b91c1c;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.resignEmployeesTable input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0d9488;
+  cursor: pointer;
+}
+
+.resignEmployeesActionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.resignEmployeesTable td.isActionColumn button,
+.resignEmployeesTableMessage button {
+  padding: 4px 8px;
+  border: 1px solid #0d9488;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #0f766e;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.14s ease, color 0.14s ease;
+}
+
+.resignEmployeesTable td.isActionColumn button:hover,
+.resignEmployeesTableMessage button:hover {
+  background: #0d9488;
+  color: #ffffff;
+}
+
+.resignEmployeesTableMessage {
+  display: flex;
+  min-height: 180px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px;
+  color: #526b79;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.resignEmployeesTableMessage.isError {
+  color: #b91c1c;
+}
+
 @media (max-width: 700px) {
   .dashboardNavbar {
     gap: 10px;
@@ -909,6 +1546,27 @@
     display: none;
   }
 
+  .resignEmployeesToolbar {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+    gap: 10px;
+  }
+
+  .resignEmployeesSummary {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .resignEmployeesMetric {
+    min-height: 30px;
+    padding: 3px 7px;
+  }
+
+  .resignEmployeesFilters {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
   .esiApplicationsPage {
     padding: 12px;
   }
@@ -919,6 +1577,13 @@
 
   .esiApplicationsHeader {
     flex-wrap: wrap;
+  }
+
+  .esiApplicationsRightControls {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+    padding-bottom: 2px;
   }
 
   .manageApplicationsFilters {
@@ -939,17 +1604,25 @@
     margin-left: 0;
   }
 
-  .esiApplicationsSearch {
-    flex: 1 0 100%;
-    min-width: 0;
+  .esiApplicationsToolbarControl {
+    width: 150px;
+    min-width: 150px;
+    flex-basis: 150px;
   }
 
+  .esiApplicationsToolbarControl.esiApplicationsSearch {
+    width: 180px;
+    min-width: 170px;
+    flex-basis: 180px;
+  }
+
+  .esiApplicationsToolbarControl.esiApplicationsYearInput {
+    width: 76px;
+    min-width: 76px;
+    flex-basis: 76px;
+  }
   .verifiedApplicationsFilters {
-    align-items: stretch;
-  }
-
-  .verifiedApplicationsFilters label {
-    flex: 1 1 140px;
+    align-items: center;
   }
 
   .verifiedApplicationsFilters select,

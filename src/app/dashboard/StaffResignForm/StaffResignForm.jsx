@@ -187,12 +187,12 @@ export default function ResignationFormExact({ employee }) {
         <div className="text-center border-b border-neutral-600 py-2">
           <h1 className="text-lg font-bold">Resignation Application Form</h1>
           <p className="text-[10px] mt-0.5">
-            We are following "IATF 16949 CAPD method 10.3 Continuous Improvement Spirit" to improve our GTI
+            We are following &quot;IATF 16949 CAPD method 10.3 Continuous Improvement Spirit&quot; to improve our GTI
           </p>
         </div>
 
         {/* Header row: names/ids */}
-        <div className="grid grid-cols-5">
+        <div className="grid" style={{ gridTemplateColumns: "1.4fr 0.8fr 1fr 1fr 1fr" }}>
           <AutoField fieldLabel="Employee Name" value={employeeName} onChange={setEmployeeName} />
           <AutoField fieldLabel="Employee ID No" value={employeeId} onChange={setEmployeeId} />
           <AutoField fieldLabel="Designation" value={designation} onChange={setDesignation} />

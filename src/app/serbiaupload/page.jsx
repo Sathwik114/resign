@@ -2,6 +2,7 @@ import '../dashboard/page.css';
 import { cookies } from 'next/headers';
 import * as jose from 'jose';
 import DashboardNavbar from '../dashboard/DashboardNavbar';
+import DashboardFooter from '../dashboard/DashboardFooter';
 import SerbiaUploadClient from './SerbiaUploadClient';
 import { getEmployeeName } from '../dashboard/employee';
 
@@ -31,7 +32,7 @@ export default async function SerbiaUploadPage() {
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', height: '100vh', maxHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', color: '#333333', overflow: 'hidden' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', height: '100vh', maxHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F0F7F8', color: '#183B4E', overflow: 'hidden' }}>
       
       <DashboardNavbar empName={empName} activePage="serbia" />
 
@@ -39,7 +40,7 @@ export default async function SerbiaUploadPage() {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '12px 20px', minHeight: 0, overflow: 'hidden' }}>
         <SerbiaUploadClient />
       </main>
-      
+      <DashboardFooter />
     </div>
   );
 }

@@ -22,23 +22,9 @@ export default function DashboardMenu({ activePage }) {
       </button>
       {open && (
         <nav className="dashboardMenuPanel" id="dashboard-navigation" aria-label="Dashboard navigation">
-          {activePage === 'esi' ? (
-            <>
-              <Link href="/dashboard/esi-applications/verified" onClick={() => setOpen(false)}>
-                Verified Applications
-              </Link>
-              <Link href="/dashboard/manage-applications" onClick={() => setOpen(false)}>
-                Manage Applications
-              </Link>
-              <Link href="/dashboard" onClick={() => setOpen(false)}>
-                Dashboard
-              </Link>
-            </>
-          ) : (
-            <Link href="/dashboard/esi-applications/verified" onClick={() => setOpen(false)}>
-              ESI Forms
-            </Link>
-          )}
+          <Link href="/dashboard" onClick={() => setOpen(false)}>
+            ← Return to Dashboard
+          </Link>
         </nav>
       )}
     </div>

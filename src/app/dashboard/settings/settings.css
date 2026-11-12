@@ -1,0 +1,312 @@
+.settingsPage {
+  flex: 1;
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.settingsSection + .settingsSection {
+  margin-top: 36px;
+}
+
+/* ---------- Titles sit outside the boxes, top left ---------- */
+.sectionTitle {
+  margin: 0 0 12px;
+  text-align: left;
+}
+
+.sectionTitle h1,
+.sectionTitle h2 {
+  margin: 0;
+  color: #183b4e;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sectionTitle p {
+  margin: 5px 0 0;
+  color: #526b79;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* ---------- Thin layered box (thin border + faint second layer) ---------- */
+.settingsBox,
+.tableBox {
+  overflow: hidden;
+  border: 1px solid #c5d3df;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 3px #eef3f7,
+    0 6px 16px rgba(16, 42, 67, 0.08);
+}
+
+/* ---------- Settings box: one line ---------- */
+.settingsBox {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding: 8px 14px;
+}
+
+.settingsCurrentStatus {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+}
+
+.settingsControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.settingsDivider {
+  width: 1px;
+  height: 30px;
+  background: #c5d3df;
+}
+
+.settingsStatus {
+  flex: none;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #e8edf0;
+  color: #526b79;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.settingsStatus.isEnabled {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.settingsStatus.isDisabled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.settingsOptionName {
+  margin: 0;
+  color: #183b4e;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ---------- Pill (tablet-shaped) Disabled / Enabled switch ---------- */
+.settingsSwitch {
+  display: inline-flex;
+  flex: none;
+  padding: 3px;
+  border: 1px solid #d6e3e8;
+  border-radius: 999px;
+  background: #e9eff2;
+  box-shadow: inset 0 1px 3px rgba(16, 42, 67, 0.1);
+}
+
+.settingsChoice {
+  min-width: 88px;
+  min-height: 30px;
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #526b79;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.settingsChoice.isDisabledChoice[aria-pressed='true'] {
+  background: #dc2626;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(185, 28, 28, 0.3);
+}
+
+.settingsChoice.isEnabledChoice[aria-pressed='true'] {
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+}
+
+.settingsChoice:hover:not(:disabled):not([aria-pressed='true']) {
+  background: #d9e3e8;
+  color: #183b4e;
+}
+
+.settingsChoice:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.settingsChoice:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.settingsError {
+  flex: 1 0 100%;
+  margin: 12px 0 0;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.settingsErrorBlock {
+  margin: 0 0 12px;
+}
+
+/* ---------- Table: navy header, thin grid lines on every cell ---------- */
+.tableScroll {
+  overflow: auto;
+  max-height: 420px;
+}
+
+.deletedHistoryTable {
+  width: 100%;
+  border-collapse: collapse;
+  color: #1f3a50;
+  font-size: 12px;
+  text-align: left;
+}
+
+.deletedHistoryTable th,
+.deletedHistoryTable td {
+  padding: 7px 10px;
+  border: 1px solid #c5d3df;
+  vertical-align: middle;
+}
+
+.deletedHistoryTable th {
+  position: sticky;
+  top: 0;
+  background: #173a5b;
+  border-color: #35587a;
+  color: #ffffff;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* the outer edge is drawn by the box itself */
+.deletedHistoryTable th:first-child,
+.deletedHistoryTable td:first-child { border-left: 0; }
+.deletedHistoryTable th:last-child,
+.deletedHistoryTable td:last-child { border-right: 0; }
+.deletedHistoryTable th { border-top: 0; }
+.deletedHistoryTable tbody tr:last-child td { border-bottom: 0; }
+
+.deletedHistoryTable tbody tr:hover td {
+  background: #f4f9fb;
+}
+
+/* ---------- Pager (Prev / Next, driven by jQuery) ---------- */
+.deletedPager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  min-height: 40px;
+  padding: 5px 12px;
+  border-top: 1px solid #c5d3df;
+  background: #f8fbfc;
+}
+
+.pagerInfo {
+  margin-right: 8px;
+  color: #526b79;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pagerButtons {
+  display: flex;
+}
+
+.pagerBtn {
+  min-width: 70px;
+  min-height: 28px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #173a5b;
+  color: #ffffff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.pagerBtn + .pagerBtn {
+  margin-left: 8px;
+}
+
+.pagerBtn:hover:not(:disabled) {
+  background: #24537d;
+}
+
+.pagerBtn:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.pagerBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 700px) {
+  .settingsPage {
+    padding: 20px 14px;
+  }
+
+  .settingsBox {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .settingsCurrentStatus {
+    flex: 1 1 200px;
+    flex-wrap: wrap;
+  }
+
+  .settingsControls {
+    margin-left: auto;
+  }
+
+  .settingsOptionName {
+    flex: 1 1 140px;
+    margin: 0 4px;
+  }
+
+  .settingsSwitch {
+    margin: 0 0 0 auto;
+  }
+
+  .settingsChoice {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .deletedPager {
+    gap: 6px;
+    padding: 5px 8px;
+  }
+
+  .pagerBtn {
+    min-width: 62px;
+    padding: 4px 9px;
+  }
+}

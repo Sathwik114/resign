@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 7002",
+    "dev:next": "next dev -p 7002",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 7002",
     "lint": "eslint"
   },
   "dependencies": {
@@ -15,6 +16,7 @@
     "exceljs": "^4.4.0",
     "html2pdf.js": "^0.14.0",
     "jose": "^6.2.3",
+    "jquery": "^4.0.0",
     "jspdf": "^4.2.1",
     "ldapjs": "^3.0.7",
     "mssql": "^12.7.0",
@@ -35,6 +37,7 @@
     "unrs-resolver@1.12.2": true,
     "@prisma/client@6.16.2": true,
     "@prisma/engines@6.16.2": true,
-    "prisma@6.16.2": true
+    "prisma@6.16.2": true,
+    "jquery@4.0.0": true
   }
 }
