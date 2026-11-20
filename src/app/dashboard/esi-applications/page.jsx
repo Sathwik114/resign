@@ -26,7 +26,7 @@ export default async function EsiApplicationsPage() {
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F0F7F8', color: '#183B4E', overflow: 'hidden' }}>
-      <DashboardNavbar empName={empName} activePage="esi" canManage={canManage} />
+      <DashboardNavbar empName={empName} activePage="esi" activeSection="applications" canManage={canManage} />
       <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <EsiApplicationsTable canManage={canManage} />
       </div>

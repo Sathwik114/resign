@@ -5,11 +5,17 @@ import { usePathname } from 'next/navigation';
 import LogoutButton from './LogoutButton';
 import DashboardMenu from './DashboardMenu';
 
-export default function DashboardNavbar({ empName, activePage, canManage = false }) {
+export default function DashboardNavbar({
+  empName,
+  activePage,
+  activeSection,
+  canManage = false,
+}) {
   const pathname = usePathname() || '';
-
   const isResign = pathname.startsWith('/dashboard/resign') || activePage === 'resign';
   const isSerbia = pathname.startsWith('/serbiaupload') || activePage === 'serbia';
+  const isApplications = pathname.startsWith('/dashboard/esi-applications') || activeSection === 'applications';
+  const isSettings = pathname === '/dashboard/settings' || activeSection === 'settings';
 
   return (
     <nav
@@ -48,8 +54,8 @@ export default function DashboardNavbar({ empName, activePage, canManage = false
         {activePage === 'esi' && (
           <Link
             href="/dashboard/esi-applications"
-            className={pathname.startsWith('/dashboard/esi-applications') ? 'nav-btn-active' : 'nav-btn-inactive'}
-            aria-current={pathname.startsWith('/dashboard/esi-applications') ? 'page' : undefined}
+            className={isApplications ? 'nav-btn-active' : 'nav-btn-inactive'}
+            aria-current={isApplications ? 'page' : undefined}
           >
             Applications
           </Link>
@@ -57,9 +63,9 @@ export default function DashboardNavbar({ empName, activePage, canManage = false
         {activePage === 'esi' && canManage && (
           <Link
             href="/dashboard/settings"
-            className={`esiFormSettingsIcon${pathname === '/dashboard/settings' ? ' isActive' : ' isInactive'}`}
+            className={`esiFormSettingsIcon${isSettings ? ' isActive' : ' isInactive'}`}
             aria-label="Settings"
-            aria-current={pathname === '/dashboard/settings' ? 'page' : undefined}
+            aria-current={isSettings ? 'page' : undefined}
           >
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z" />

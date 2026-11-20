@@ -27,7 +27,7 @@ export default async function EsiApplicationDetailsPage({ params }) {
 
   return (
     <div className="esiApplicationDetailsShell">
-      <DashboardNavbar empName={empName} activePage="esi" canManage={canManage} />
+      <DashboardNavbar empName={empName} activePage="esi" activeSection="applications" canManage={canManage} />
       <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <EsiApplicationDetails employeeId={employeeId} />
       </div>

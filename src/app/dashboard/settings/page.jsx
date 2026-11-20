@@ -26,7 +26,7 @@ export default async function SettingsPage() {
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F0F7F8', color: '#183B4E' }}>
-      <DashboardNavbar empName={empName} activePage="esi" canManage />
+      <DashboardNavbar empName={empName} activePage="esi" activeSection="settings" canManage />
       <main className="settingsPage">
         <SettingsPanel />
       </main>

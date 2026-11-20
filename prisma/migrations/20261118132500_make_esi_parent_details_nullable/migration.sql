@@ -1,0 +1,7 @@
+ALTER TABLE [dbo].[EsiEmployee] ALTER COLUMN [FatherDOB] DATE NULL;
+ALTER TABLE [dbo].[EsiEmployee] ALTER COLUMN [FatherImg] VARBINARY(MAX) NULL;
+ALTER TABLE [dbo].[EsiEmployee] ALTER COLUMN [FatherPhotoMimeType] VARCHAR(100) NULL;
+
+ALTER TABLE [dbo].[EsiEmployee] ALTER COLUMN [MotherDOB] DATE NULL;
+ALTER TABLE [dbo].[EsiEmployee] ALTER COLUMN [MotherImg] VARBINARY(MAX) NULL;
+ALTER TABLE [dbo].[EsiEmployee] ALTER COLUMN [MotherPhotoMimeType] VARCHAR(100) NULL;

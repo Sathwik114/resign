@@ -3,6 +3,7 @@
 import './page.css';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { TAB_SESSION_KEY } from '../tab-session';
 
 const svg = {
   viewBox: '0 0 24 24',
@@ -130,6 +131,18 @@ export default function Login() {
         } else {
           failInline(data.error || 'Authentication failed. Please try again.');
         }
+        return;
+      }
+
+      try {
+        window.sessionStorage.setItem(TAB_SESSION_KEY, 'authenticated');
+      } catch (storageError) {
+        console.error('Unable to save the tab session:', storageError);
+        const logoutResponse = await fetch('/api/auth/logout', { method: 'POST' });
+        if (!logoutResponse.ok) {
+          throw new Error('Unable to clear the login after tab session storage failed.');
+        }
+        failInline('Your browser could not save this tab session. Please enable session storage and try again.');
         return;
       }
 

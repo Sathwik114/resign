@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { TAB_SESSION_KEY } from '../tab-session';
 
 /*
   Browser / OS notes
@@ -276,7 +277,11 @@ export default function PortalClient({ empName, resignLog, esiLog }) {
     setLoggingOut(true);
     try {
       const res = await fetch('/api/auth/logout', { method: 'POST' });
-      if (res.ok) { router.push('/login'); router.refresh(); }
+      if (res.ok) {
+        window.sessionStorage.removeItem(TAB_SESSION_KEY);
+        router.push('/login');
+        router.refresh();
+      }
     } catch { /* ignore */ }
     finally { setLoggingOut(false); }
   };

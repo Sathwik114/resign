@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { TAB_SESSION_KEY } from '../tab-session';
 
 export default function LogoutButton() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function LogoutButton() {
       });
 
       if (response.ok) {
+        window.sessionStorage.removeItem(TAB_SESSION_KEY);
         // Redirect to login page and refresh routing context
         router.push('/login');
         router.refresh();

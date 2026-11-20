@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const Checkbox = ({ label, checked, onChange }) => (
   <label className="rf-checkbox-label">
@@ -108,6 +108,7 @@ function getReasonsFromEmployee(employee) {
 function ResignationForm({
   header,
   setHeader,
+  onStudentIdChange,
   reasons,
   setReasons,
   reasonDetails,
@@ -157,7 +158,9 @@ function ResignationForm({
                 <div className="rf-header-label">Student ID No.</div>
                 <input
                   value={header.studentId}
-                  onChange={(e) => updateHeader("studentId")(e.target.value)}
+                  onChange={(e) => onStudentIdChange
+                    ? onStudentIdChange(e.target.value)
+                    : updateHeader("studentId")(e.target.value)}
                   className="rf-plain-input rf-center rf-bold"
                   style={getHeaderValueStyle(header.studentId, 11)}
                 />
@@ -381,9 +384,6 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
   });
   const [hrHeadSignature1, setHrHeadSignature1] = useState("");
 
-  const isShared = !employee1 && !employee2;
-
-  // If separate employees were provided, maintain distinct state for copy 2
   const [header2, setHeader2] = useState(() => getHeaderFromEmployee(emp2));
   const [reasons2, setReasons2] = useState(() => getReasonsFromEmployee(emp2).reasons);
   const [reasonDetails2, setReasonDetails2] = useState(() => getReasonsFromEmployee(emp2).reasonDetails);
@@ -398,6 +398,45 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
     others: { returned: "", signature: "" },
   });
   const [hrHeadSignature2, setHrHeadSignature2] = useState("");
+
+  const lookupTimer1 = useRef(null);
+  const lookupTimer2 = useRef(null);
+
+  useEffect(() => () => {
+    if (lookupTimer1.current) clearTimeout(lookupTimer1.current);
+    if (lookupTimer2.current) clearTimeout(lookupTimer2.current);
+  }, []);
+
+  const lookupStudent = (studentId, setHeader, setReasons, setReasonDetails, timerRef) => {
+    setHeader((previous) => ({ ...previous, studentId }));
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+    const normalizedId = String(studentId || "").trim();
+    if (!normalizedId) return;
+
+    timerRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `/api/employees?year=2026&month=1&active=Y&type=STUDENT&employeeCode=${encodeURIComponent(normalizedId)}`,
+          { cache: "no-store" },
+        );
+        if (!response.ok) return;
+
+        const result = await response.json();
+        const student = (result.data || []).find((item) =>
+          String(item.EMPCODE || "").trim().toUpperCase() === normalizedId.toUpperCase()
+        );
+        if (!student) return;
+
+        setHeader(getHeaderFromEmployee(student));
+        const reasons = getReasonsFromEmployee(student);
+        setReasons(reasons.reasons);
+        setReasonDetails(reasons.reasonDetails);
+      } catch (error) {
+        console.error("Failed to fetch student details:", error);
+      }
+    }, 300);
+  };
 
   return (
     <div className="rf-page">
@@ -414,6 +453,7 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
           width: 100%;
           min-width: 0;
           -webkit-print-color-adjust: exact;
+          -moz-print-color-adjust: exact;
           print-color-adjust: exact;
         }
 
@@ -837,6 +877,13 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
             background: #fff !important;
           }
 
+          * {
+            -webkit-print-color-adjust: exact !important;
+            -moz-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            forced-color-adjust: none !important;
+          }
+
           body * {
             visibility: hidden !important;
           }
@@ -960,19 +1007,20 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
         <div className="rf-half">
           <ResignationForm
             header={header1}
-            setHeader={isShared ? (val) => { setHeader1(val); setHeader2(val); } : setHeader1}
+            setHeader={setHeader1}
+            onStudentIdChange={(value) => lookupStudent(value, setHeader1, setReasons1, setReasonDetails1, lookupTimer1)}
             reasons={reasons1}
-            setReasons={isShared ? (val) => { setReasons1(val); setReasons2(val); } : setReasons1}
+            setReasons={setReasons1}
             reasonDetails={reasonDetails1}
-            setReasonDetails={isShared ? (val) => { setReasonDetails1(val); setReasonDetails2(val); } : setReasonDetails1}
+            setReasonDetails={setReasonDetails1}
             signatures={signatures1}
-            setSignatures={isShared ? (val) => { setSignatures1(val); setSignatures2(val); } : setSignatures1}
+            setSignatures={setSignatures1}
             generalAffairs={generalAffairs1}
-            setGeneralAffairs={isShared ? (val) => { setGeneralAffairs1(val); setGeneralAffairs2(val); } : setGeneralAffairs1}
+            setGeneralAffairs={setGeneralAffairs1}
             hrDept={hrDept1}
-            setHrDept={isShared ? (val) => { setHrDept1(val); setHrDept2(val); } : setHrDept1}
+            setHrDept={setHrDept1}
             hrHeadSignature={hrHeadSignature1}
-            setHrHeadSignature={isShared ? (val) => { setHrHeadSignature1(val); setHrHeadSignature2(val); } : setHrHeadSignature1}
+            setHrHeadSignature={setHrHeadSignature1}
           />
         </div>
 
@@ -985,20 +1033,21 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
         {/* Bottom Half (50% of page height) */}
         <div className="rf-half">
           <ResignationForm
-            header={isShared ? header1 : header2}
-            setHeader={isShared ? (val) => { setHeader1(val); setHeader2(val); } : setHeader2}
-            reasons={isShared ? reasons1 : reasons2}
-            setReasons={isShared ? (val) => { setReasons1(val); setReasons2(val); } : setReasons2}
-            reasonDetails={isShared ? reasonDetails1 : reasonDetails2}
-            setReasonDetails={isShared ? (val) => { setReasonDetails1(val); setReasonDetails2(val); } : setReasonDetails2}
-            signatures={isShared ? signatures1 : signatures2}
-            setSignatures={isShared ? (val) => { setSignatures1(val); setSignatures2(val); } : setSignatures2}
-            generalAffairs={isShared ? generalAffairs1 : generalAffairs2}
-            setGeneralAffairs={isShared ? (val) => { setGeneralAffairs1(val); setGeneralAffairs2(val); } : setGeneralAffairs2}
-            hrDept={isShared ? hrDept1 : hrDept2}
-            setHrDept={isShared ? (val) => { setHrDept1(val); setHrDept2(val); } : setHrDept2}
-            hrHeadSignature={isShared ? hrHeadSignature1 : hrHeadSignature2}
-            setHrHeadSignature={isShared ? (val) => { setHrHeadSignature1(val); setHrHeadSignature2(val); } : setHrHeadSignature2}
+            header={header2}
+            setHeader={setHeader2}
+            onStudentIdChange={(value) => lookupStudent(value, setHeader2, setReasons2, setReasonDetails2, lookupTimer2)}
+            reasons={reasons2}
+            setReasons={setReasons2}
+            reasonDetails={reasonDetails2}
+            setReasonDetails={setReasonDetails2}
+            signatures={signatures2}
+            setSignatures={setSignatures2}
+            generalAffairs={generalAffairs2}
+            setGeneralAffairs={setGeneralAffairs2}
+            hrDept={hrDept2}
+            setHrDept={setHrDept2}
+            hrHeadSignature={hrHeadSignature2}
+            setHrHeadSignature={setHrHeadSignature2}
           />
         </div>
       </div>

@@ -29,6 +29,24 @@ export default function EmployeeTable() {
   const [pdfError, setPdfError] = useState(null);
   const printRefs = useRef({});
 
+  const handleBrowserPrint = () => {
+    if (typeof window === 'undefined' || typeof window.print !== 'function') return;
+
+    document.documentElement.classList.add('cross-browser-printing');
+    const removePrintClass = () => document.documentElement.classList.remove('cross-browser-printing');
+    window.addEventListener('afterprint', removePrintClass, { once: true });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        try {
+          window.print();
+        } finally {
+          removePrintClass();
+        }
+      });
+    });
+  };
+
   const fetchEmployees = useCallback(async (selectedYear, selectedMonth, selectedActive, selectedType) => {
     if (!selectedType) {
       setEmployees([]);
@@ -401,7 +419,7 @@ export default function EmployeeTable() {
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => window.print()}
+                    onClick={handleBrowserPrint}
                     className="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg transition-all shadow-sm flex items-center gap-2 cursor-pointer"
                   >
                     <span>🖨️</span> Print / Save as PDF
@@ -472,7 +490,7 @@ export default function EmployeeTable() {
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => window.print()}
+                    onClick={handleBrowserPrint}
                     className="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-4 py-2.5 rounded-lg transition-all shadow-sm flex items-center gap-2 cursor-pointer"
                   >
                     <span>🖨️</span> Print / Save as PDF

@@ -14,6 +14,7 @@ export async function GET(request) {
     const monthParam = searchParams.get('month');
     const activeParam = searchParams.get('active') || 'N'; // Default to N (resigned)
     const typeParam = searchParams.get('type') || 'TEMP'; // TEMP, REG, or STUDENT
+    const employeeCodeParam = searchParams.get('employeeCode');
     
     const year = yearParam ? parseInt(yearParam, 10) : defaultYear;
     const month = monthParam ? parseInt(monthParam, 10) : defaultMonth;
@@ -39,10 +40,18 @@ export async function GET(request) {
       const studentRequest = pool.request();
       studentRequest.input('year', sql.Int, year);
       studentRequest.input('month', sql.Int, month);
-      const activeFilter = activeParam === 'Y'
+      const employeeCodeFilter = employeeCodeParam
+        ? 'AND E.EMPCODE = @employeeCode'
+        : '';
+      if (employeeCodeParam) {
+        studentRequest.input('employeeCode', sql.VarChar, employeeCodeParam);
+      }
+      const activeFilter = employeeCodeParam
+        ? '1 = 1'
+        : activeParam === 'Y'
         ? "E.ACTIVE = 'Y'"
         : "(E.ACTIVE = 'N' OR E.ACTIVE IS NULL OR E.ACTIVE = ' ')";
-      const dolFilter = activeParam === 'Y'
+      const dolFilter = employeeCodeParam || activeParam === 'Y'
         ? ''
         : 'AND E.DOL IS NOT NULL AND YEAR(E.DOL) = @year AND MONTH(E.DOL) = @month';
 
@@ -66,6 +75,7 @@ export async function GET(request) {
         LEFT JOIN [PAYROLLITI].[dbo].[NSECMast] N
           ON E.NSECCODE = N.NSECCODE
         WHERE ${activeFilter}
+          ${employeeCodeFilter}
           ${dolFilter}
         ORDER BY E.EMPNAME ASC
       `);

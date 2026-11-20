@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { TAB_SESSION_KEY } from './tab-session';
 
 const IDLE_TIMEOUT = 5 * 60 * 1000;
 const LAST_ACTIVITY_KEY = 'resign-last-activity';
@@ -12,7 +13,9 @@ export default function IdleLogout() {
   const loggingOut = useRef(false);
 
   useEffect(() => {
-    if (pathname === '/login' || pathname === '/signup') return undefined;
+    if (pathname === '/login' || pathname === '/signup' || pathname.startsWith('/esiform')) {
+      return undefined;
+    }
 
     let lastActivity = Date.now();
     let lastPersistedActivity = lastActivity;
@@ -38,6 +41,7 @@ export default function IdleLogout() {
         console.error('Automatic logout failed:', error);
       } finally {
         try {
+          timerWindow.sessionStorage.removeItem(TAB_SESSION_KEY);
           timerWindow.localStorage.removeItem(LAST_ACTIVITY_KEY);
           timerWindow.localStorage.setItem(LOGOUT_KEY, String(Date.now()));
         } catch (error) {

@@ -17,6 +17,10 @@ function asDate(value) {
   return value ? new Date(`${value}T00:00:00.000Z`) : null;
 }
 
+function toUpperText(value) {
+  return typeof value === "string" ? value.trim().toUpperCase() : value;
+}
+
 export async function POST(request) {
   const contentLength = Number(request.headers.get("content-length") || 0);
   if (contentLength > MAX_REQUEST_SIZE) {
@@ -111,19 +115,43 @@ export async function POST(request) {
       !isValidDate(details.spouseDateOfBirth))) {
       return NextResponse.json({ error: "Complete the spouse details." }, { status: 400 });
     }
-    if (details.includesParents && (!isValidDate(details.fatherDateOfBirth) ||
-      !isValidDate(details.motherDateOfBirth))) {
-      return NextResponse.json({ error: "Enter valid dates of birth for both parents." }, { status: 400 });
-    }
     if (typeof details.includesParents !== "boolean") {
       return NextResponse.json({ error: "Parent inclusion selection is required." }, { status: 400 });
+    }
+
+    const fatherDob = typeof details.fatherDateOfBirth === "string" ? details.fatherDateOfBirth.trim() : "";
+    const motherDob = typeof details.motherDateOfBirth === "string" ? details.motherDateOfBirth.trim() : "";
+
+    if (details.includesParents) {
+      if (fatherDob && !isValidDate(fatherDob)) {
+        return NextResponse.json({ error: "Enter a valid father's date of birth." }, { status: 400 });
+      }
+      if (motherDob && !isValidDate(motherDob)) {
+        return NextResponse.json({ error: "Enter a valid mother's date of birth." }, { status: 400 });
+      }
+
+      const fatherPhoto = formData.get("fatherPhoto");
+      const motherPhoto = formData.get("motherPhoto");
+      const fatherStarted = Boolean(fatherDob || (fatherPhoto instanceof File && fatherPhoto.size > 0));
+      const motherStarted = Boolean(motherDob || (motherPhoto instanceof File && motherPhoto.size > 0));
+
+      if (!fatherStarted && !motherStarted) {
+        return NextResponse.json({ error: "Select at least one parent." }, { status: 400 });
+      }
+      if (fatherStarted && (!fatherDob || !(fatherPhoto instanceof File) || fatherPhoto.size === 0)) {
+        return NextResponse.json({ error: "Enter the father's date of birth and upload the father's photo." }, { status: 400 });
+      }
+      if (motherStarted && (!motherDob || !(motherPhoto instanceof File) || motherPhoto.size === 0)) {
+        return NextResponse.json({ error: "Enter the mother's date of birth and upload the mother's photo." }, { status: 400 });
+      }
     }
 
     const imageNames = [
       "photo",
       ...(married ? ["spousePhoto"] : []),
       ...Array.from({ length: childCount }, (_, index) => `child${index + 1}Photo`),
-      ...(details.includesParents ? ["fatherPhoto", "motherPhoto"] : []),
+      ...(details.includesParents && fatherDob ? ["fatherPhoto"] : []),
+      ...(details.includesParents && motherDob ? ["motherPhoto"] : []),
     ];
     const images = {};
     for (const name of imageNames) {
@@ -141,8 +169,8 @@ export async function POST(request) {
     }
 
     const data = {
-      EmpID: details.employeeId.trim(),
-      EmpName: details.employeeName.trim(),
+      EmpID: toUpperText(details.employeeId),
+      EmpName: toUpperText(details.employeeName),
       DOJ: asDate(details.dateOfJoining),
       DOB: asDate(details.dateOfBirth),
       Gender: details.gender,
@@ -151,23 +179,23 @@ export async function POST(request) {
       MaritalStatus: details.maritalStatus,
       HasPrevESI: details.hasPreviousEsi === true,
       PrevESINo: details.hasPreviousEsi ? details.previousEsiNumber : null,
-      Address: details.address.trim(),
+      Address: toUpperText(details.address),
       State: details.state,
       Pincode: details.pincode,
       EmpImg: images.photo.data,
       PhotographMimeType: images.photo.mimeType,
-      FatherName: details.fatherName.trim(),
-      MotherName: details.motherName.trim(),
-      SpouseName: married ? details.spouseName.trim() : null,
+      FatherName: toUpperText(details.fatherName),
+      MotherName: toUpperText(details.motherName),
+      SpouseName: married ? toUpperText(details.spouseName) : null,
       SpouseDOB: married ? asDate(details.spouseDateOfBirth) : null,
       SpouseImg: images.spousePhoto?.data ?? null,
       SpousePhotoMimeType: images.spousePhoto?.mimeType ?? null,
       ChildCount: childCount,
       IncludeParents: details.includesParents,
-      FatherDOB: details.includesParents ? asDate(details.fatherDateOfBirth) : null,
+      FatherDOB: details.includesParents && fatherDob ? asDate(fatherDob) : null,
       FatherImg: images.fatherPhoto?.data ?? null,
       FatherPhotoMimeType: images.fatherPhoto?.mimeType ?? null,
-      MotherDOB: details.includesParents ? asDate(details.motherDateOfBirth) : null,
+      MotherDOB: details.includesParents && motherDob ? asDate(motherDob) : null,
       MotherImg: images.motherPhoto?.data ?? null,
       MotherPhotoMimeType: images.motherPhoto?.mimeType ?? null,
     };
@@ -176,7 +204,7 @@ export async function POST(request) {
       const child = details.children[index];
       const image = images[`child${index + 1}Photo`];
       const fieldIndex = index + 1;
-      data[`Child${fieldIndex}Name`] = child?.name.trim() ?? null;
+      data[`Child${fieldIndex}Name`] = child ? toUpperText(child.name) : null;
       data[`Child${fieldIndex}DOB`] = child ? asDate(child.dateOfBirth) : null;
       data[`Child${fieldIndex}Img`] = image?.data ?? null;
       data[`Child${fieldIndex}PhotoMimeType`] = image?.mimeType ?? null;

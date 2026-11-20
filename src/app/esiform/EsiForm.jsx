@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 
 const STATES = [
   "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana",
@@ -13,6 +14,14 @@ const STATES = [
 const GENDERS = ["Male", "Female", "Others"];
 const MARITAL = ["Married", "Unmarried", "Widowed", "Divorced"];
 const STEPS = ["Personal", "Family", "Parents", "Review"];
+const UPPERCASE_TEXT_FIELDS = new Set([
+  "empId",
+  "empName",
+  "address",
+  "fatherName",
+  "motherName",
+  "spouseName",
+]);
 
 const initial = {
   empId: "", empName: "", doj: "", dob: "", gender: "", mobile: "", aadhar: "", marital: "",
@@ -98,8 +107,10 @@ const css = `
 .f label,.lbl{display:block;font-size:11.5px;font-weight:600;color:#43605d;margin-bottom:5px}
 .telugu-label{font-size:9px}
 .esi-card h2 .telugu-label{font-size:10px}
+.esi-parents-question-te{display:block;font-size:9px;font-weight:500;line-height:1.4;white-space:nowrap}
 .f input[type=text],.f input[type=tel],.f input[type=date],.f input[type=number],.f select,.f textarea{
   width:100%;font:inherit;font-size:13.5px;padding:0 12px;height:40px;border:1px solid var(--line);border-radius:10px;background:#f8fbfa;color:var(--ink);outline:none;transition:border .15s,box-shadow .15s,background .15s;appearance:none;-webkit-appearance:none}
+.f input[type=text],.f textarea{text-transform:uppercase}
 .f input::placeholder{color:#a3b2b0}
 .form-notice-overlay{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(13,31,29,.28)}
 .form-notice{position:relative;overflow:hidden;width:fit-content;max-width:calc(100vw - 40px);padding:18px 20px 24px;border:1px solid #f1b6b0;border-radius:14px;background:#fff8f7;color:#9f2d22;box-shadow:0 12px 40px rgba(0,0,0,.2);font-size:14px;font-weight:600;line-height:1.6;white-space:pre-line}
@@ -219,10 +230,17 @@ const css = `
 .sum-photo img{width:36px;height:36px;border-radius:50%;object-fit:cover}
 .decl{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:12.5px;line-height:1.5}
 .decl input{-webkit-appearance:checkbox;appearance:auto;width:18px;height:18px;margin:1px 0 0;accent-color:var(--brand);flex:none}
+.esi-success{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;background:#fff}
+.esi-success-nav{position:relative;display:flex;align-items:center;justify-content:center;min-height:60px;padding:12px 24px;background:#0a1f44;color:#fff}
+.esi-success-brand{position:absolute;left:24px;color:#38bdf8;font-size:18px;font-weight:800;letter-spacing:.5px}
+.esi-success-title{font-family:"Trebuchet MS",Arial,sans-serif;font-size:clamp(14px,4vw,17px);font-weight:700;letter-spacing:1px;text-align:center}
+.esi-success .esi-wrap{display:flex;flex:1;align-items:center;justify-content:center;width:100%;max-width:none;min-height:0;background:#fff}
 .ok{text-align:center;padding:80px 24px}
-.ok-ic{width:64px;height:64px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 0 0 8px var(--soft)}
-.ok h2{margin:0 0 6px;font-size:17px}
-.ok p{color:var(--muted);margin:0 0 20px;font-size:13px}
+.esi-success .ok{width:100%;padding:32px 16px}
+.esi-success .ok-image{display:block;max-width:70vw;height:auto;object-fit:contain;margin:0 auto 28px}
+.ok h2,.ok p{margin:0;white-space:nowrap;line-height:1.5}
+.ok h2{font-size:clamp(10px,3.4vw,17px)}
+.ok p{color:var(--muted);font-size:clamp(8px,2.8vw,15px)}
 .esi-photo-card{display:none}
 @media (min-width:768px){
   .esi-wrap{max-width:1200px}
@@ -639,11 +657,15 @@ export default function EmployeeESIForm() {
   }, [familyNotice]);
 
   const set = (k, v) => {
-    setD((p) => ({ ...p, [k]: v }));
+    const nextValue = UPPERCASE_TEXT_FIELDS.has(k) && typeof v === "string"
+      ? v.toUpperCase()
+      : v;
+    setD((p) => ({ ...p, [k]: nextValue }));
     setErrors((p) => ({ ...p, [k]: undefined }));
   };
   const setChild = (i, k, v) => {
-    setD((p) => ({ ...p, children: p.children.map((c, j) => (j === i ? { ...c, [k]: v } : c)) }));
+    const nextValue = k === "name" && typeof v === "string" ? v.toUpperCase() : v;
+    setD((p) => ({ ...p, children: p.children.map((c, j) => (j === i ? { ...c, [k]: nextValue } : c)) }));
     setErrors((p) => ({ ...p, [`c${i}${k}`]: undefined }));
   };
 
@@ -687,9 +709,19 @@ export default function EmployeeESIForm() {
     if (step === 2) {
       if (!d.includeParents) e.includeParents = "Choose yes or no";
       if (d.includeParents === "Yes") {
-        dateReq("fatherDob"); dateReq("motherDob");
-        if (!d.fatherPhoto) e.fatherPhoto = "Upload father's photo";
-        if (!d.motherPhoto) e.motherPhoto = "Upload mother's photo";
+        const fatherStarted = Boolean(d.fatherDob || d.fatherPhoto);
+        const motherStarted = Boolean(d.motherDob || d.motherPhoto);
+        if (!fatherStarted && !motherStarted) {
+          e.includeParents = "Select at least one parent";
+        }
+        if (fatherStarted) {
+          dateReq("fatherDob");
+          if (!d.fatherPhoto) e.fatherPhoto = "Upload father's photo";
+        }
+        if (motherStarted) {
+          dateReq("motherDob");
+          if (!d.motherPhoto) e.motherPhoto = "Upload mother's photo";
+        }
       }
     }
     setErrors(e);
@@ -727,7 +759,8 @@ export default function EmployeeESIForm() {
         ["photo", d.photo],
         ...(married ? [["spousePhoto", d.spousePhoto]] : []),
         ...(showChildren ? d.children.slice(0, count).map((child, index) => [`child${index + 1}Photo`, child.photo]) : []),
-        ...(d.includeParents === "Yes" ? [["fatherPhoto", d.fatherPhoto], ["motherPhoto", d.motherPhoto]] : []),
+        ...(d.includeParents === "Yes" && d.fatherDob && d.fatherPhoto ? [["fatherPhoto", d.fatherPhoto]] : []),
+        ...(d.includeParents === "Yes" && d.motherDob && d.motherPhoto ? [["motherPhoto", d.motherPhoto]] : []),
       ];
       const compressedPhotos = await Promise.all(
         photoEntries.map(async ([name, file]) => {
@@ -744,8 +777,8 @@ export default function EmployeeESIForm() {
         children: current.children.map((child, index) => (
           showChildren && index < count ? { ...child, photo: compressedByName[`child${index + 1}Photo`] } : child
         )),
-        fatherPhoto: d.includeParents === "Yes" ? compressedByName.fatherPhoto : current.fatherPhoto,
-        motherPhoto: d.includeParents === "Yes" ? compressedByName.motherPhoto : current.motherPhoto,
+        fatherPhoto: d.includeParents === "Yes" && compressedByName.fatherPhoto ? compressedByName.fatherPhoto : current.fatherPhoto,
+        motherPhoto: d.includeParents === "Yes" && compressedByName.motherPhoto ? compressedByName.motherPhoto : current.motherPhoto,
       }));
 
       const formData = new FormData();
@@ -773,8 +806,8 @@ export default function EmployeeESIForm() {
           dateOfBirth: child.dob,
         })),
         includesParents: d.includeParents === "Yes",
-        fatherDateOfBirth: d.fatherDob,
-        motherDateOfBirth: d.motherDob,
+        fatherDateOfBirth: d.includeParents === "Yes" ? d.fatherDob : null,
+        motherDateOfBirth: d.includeParents === "Yes" ? d.motherDob : null,
       }));
       compressedPhotos.forEach(([name, file]) => formData.append(name, file));
 
@@ -793,20 +826,19 @@ export default function EmployeeESIForm() {
       setSubmitting(false);
     }
   };
-  const reset = () => {
-    setD(initial); setStep(0); setAgree(false); setDone(false); setErrors({}); setSubmitError(""); setDuplicateError("");
-  };
-
   const num = (k, max) => (e) => set(k, e.target.value.replace(/\D/g, "").slice(0, max));
 
   if (done) {
     return (
-      <div className="esi"><style>{css}</style>
+      <div className="esi esi-success"><style>{css}</style>
+        <nav className="esi-success-nav" aria-label="Company">
+          <span className="esi-success-brand">GTI</span>
+          <span className="esi-success-title">GREENTECH INDUSTRIES</span>
+        </nav>
         <div className="esi-wrap"><div className="ok">
-          <div className="ok-ic"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
-          <h2>Details submitted</h2>
-          <p>Thank you,Your ESI details have been recorded.</p>
-          <button className="btn pri" style={{ width: "100%" }} onClick={reset}>Fill another form</button>
+          <Image className="ok-image" src="/images/submit.png" alt="Form submitted successfully" width={280} height={280} priority unoptimized style={{ width: "280px", maxWidth: "70vw", height: "auto" }} />
+          <h2>Your details have been submitted successfully</h2>
+          <p>మీ వివరాలు విజయవంతంగా సమర్పించబడ్డాయి.</p>
         </div></div>
       </div>
     );
@@ -1014,7 +1046,10 @@ export default function EmployeeESIForm() {
           {step === 2 && (
             <section className="esi-card esi-parents-card">
               <h2>Parents</h2>
-              <Field label="Do you want your parents included in the ESI details?" error={errors.includeParents}>
+              <Field
+                label={<>Do you want your parents included in the ESI details?<span className="esi-parents-question-te">( మీ తల్లిదండ్రులను ESI వివరాలలో చేర్చాలనుకుంటున్నారా?)</span></>}
+                error={errors.includeParents}
+              >
                 <Chips seg name="parents" options={["Yes", "No"]} value={d.includeParents} onChange={(v) => set("includeParents", v)} />
               </Field>
               {d.includeParents === "Yes" && (
