@@ -27,6 +27,22 @@ const PRINT_CSS = `
   input, textarea {
     color: #000 !important;
   }
+  .staff-notice-detail-row {
+    display: block !important;
+    white-space: nowrap !important;
+    font-size: 12px !important;
+  }
+  .staff-notice-detail-row input {
+    display: inline-block !important;
+    vertical-align: middle;
+    font-size: 12px !important;
+  }
+  .staff-notice-detail-row input:first-of-type {
+    width: 48px !important;
+  }
+  .staff-notice-detail-row input:nth-of-type(2) {
+    width: 80px !important;
+  }
 }
 `;
 
@@ -335,7 +351,7 @@ export default function ResignationFormExact({ employee }) {
         {/* Notice period / Abroad agreement */}
         <div className="grid grid-cols-2">
           <div className={cell}>
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-4 print:text-[12px]">
               <span>Notice Period</span>
               <Checkbox
                 text="Yes"
@@ -348,24 +364,24 @@ export default function ResignationFormExact({ employee }) {
                 onChange={(v) => setNoticePeriod({ no: v, yes: v ? false : noticePeriod.yes })}
               />
             </div>
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <div className="staff-notice-detail-row flex items-center gap-2 mt-2 flex-wrap print:flex-nowrap print:whitespace-nowrap print:gap-1 print:text-[12px]">
               <span>If Yes, Day(s)</span>
               <input
                 value={noticeDays}
                 onChange={(e) => setNoticeDays(e.target.value)}
-                className="w-16 border-0 border-b border-neutral-600 bg-transparent text-sm focus:outline-none"
+                className="w-20 border-0 border-b border-neutral-600 bg-transparent text-sm focus:outline-none print:w-12 print:text-[12px]"
               />
               <span>Amount Rs.</span>
               <input
                 value={noticeAmount}
                 onChange={(e) => setNoticeAmount(e.target.value)}
-                className="w-24 border-0 border-b border-neutral-600 bg-transparent text-sm focus:outline-none"
+                className="w-24 border-0 border-b border-neutral-600 bg-transparent text-sm focus:outline-none print:w-20 print:text-[12px]"
               />
               <span>/-</span>
             </div>
           </div>
           <div className={cell}>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 print:text-[12px]">
               <span>Abroad Agreement</span>
               <Checkbox
                 text="Yes"
@@ -382,12 +398,12 @@ export default function ResignationFormExact({ employee }) {
                 }
               />
             </div>
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <div className="flex items-center gap-2 mt-2 flex-wrap print:text-[12px]">
               <span>If Yes, Recovery amount Rs.</span>
               <input
                 value={recoveryAmount}
                 onChange={(e) => setRecoveryAmount(e.target.value)}
-                className="w-24 border-0 border-b border-neutral-600 bg-transparent text-sm focus:outline-none"
+                className="w-24 border-0 border-b border-neutral-600 bg-transparent text-sm focus:outline-none print:text-[12px]"
               />
               <span>/-</span>
             </div>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { isSecureRequest } from '@/lib/auth-cookie';
 
-export async function POST() {
+export async function POST(request) {
   try {
     const response = NextResponse.json(
       { message: 'Logged out successfully' },
@@ -11,7 +12,7 @@ export async function POST() {
       name: 'auth_token',
       value: '',
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isSecureRequest(request),
       sameSite: 'lax',
       path: '/',
       maxAge: 0,

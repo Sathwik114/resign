@@ -600,10 +600,15 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
           padding: 1.5px 3px;
           vertical-align: middle;
         }
+        .rf-header-cell > .rf-plain-input {
+          display: block;
+          height: 14px;
+        }
         .rf-header-label {
           text-align: center;
           font-weight: 700;
           font-size: 10.5px;
+          line-height: 12px;
           margin-bottom: 1.5px;
           color: #000;
         }
@@ -896,7 +901,7 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
           .rf-page {
             position: absolute !important;
             left: 0 !important;
-            top: 0 !important;
+            top: 5mm !important;
             width: 100% !important;
             height: 297mm !important;
             max-height: 297mm !important;
@@ -923,6 +928,8 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
             overflow: hidden !important;
             display: flex !important;
             flex-direction: column !important;
+            transform: scale(0.98) !important;
+            transform-origin: top center !important;
           }
 
           .rf-half {
@@ -964,6 +971,20 @@ export default function TwoResignationForms({ employee, employee1, employee2 }) 
           }
 
           .rf-header-row { height: 10.5mm !important; }
+          .rf-header-cell {
+            padding: 1.2mm 1mm !important;
+            vertical-align: middle !important;
+          }
+          .rf-header-label {
+            line-height: 3.2mm !important;
+            margin-bottom: 0.5mm !important;
+          }
+          .rf-header-cell > .rf-plain-input {
+            height: 4mm !important;
+            min-height: 4mm !important;
+            line-height: 3mm !important;
+            padding: 0 1px !important;
+          }
           .rf-date-row { height: 7.5mm !important; }
           .rf-reasons-row { height: 13.5mm !important; }
           .rf-sig-row { height: 15mm !important; }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import * as jose from 'jose';
 import ldap from 'ldapjs';
 import prisma from '@/lib/prisma';
+import { isSecureRequest } from '@/lib/auth-cookie';
 
 function buildCandidateDns(username, baseDN) {
   const normalized = (username || '').trim();
@@ -267,7 +268,7 @@ export async function POST(request) {
       name: 'auth_token',
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isSecureRequest(request),
       sameSite: 'lax',
       path: '/',
     });
